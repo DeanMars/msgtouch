@@ -1,0 +1,7 @@
+.idea/
+*.class
+*.lst
+msgtouch-toucher/target/
+msgtouch-framework/target/
+msgtouch-broker/target/
+msgtouch-common/target/
