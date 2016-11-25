@@ -1,5 +1,6 @@
 package com.msgtouch.framework.socket.server;
 
+import com.msgtouch.framework.settings.SocketServerSetting;
 import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
 import com.msgtouch.framework.socket.handler.MsgTouchServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;

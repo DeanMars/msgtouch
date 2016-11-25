@@ -55,7 +55,6 @@ public class MsgTouchServiceEngine {
                     String serviceName=msgService.value();
                     for (Method method : rpcMethods) {
                         MsgMethod ma = method.getAnnotation(MsgMethod.class);
-
                         String cmd = ma.value();
                         if(serviceName!=null&&!"".equals(serviceName)){
                             cmd=serviceName+"/"+cmd;

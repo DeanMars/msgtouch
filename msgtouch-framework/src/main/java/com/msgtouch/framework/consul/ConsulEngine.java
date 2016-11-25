@@ -142,8 +142,8 @@ public class ConsulEngine {
         TouchCluster touchCluster=new TouchCluster();
         touchCluster.setIp(setting.ipAddress);
         touchCluster.setPort(setting.port);
-        touchCluster.setVersion(Bootstrap.getInstances().getContextSetting().APP_VERSION);
-        touchCluster.setExt(Bootstrap.getInstances().getContextSetting().APP_EXT);
+       // touchCluster.setVersion(Bootstrap.getInstances().getContextSetting().APP_VERSION);
+      //  touchCluster.setExt(Bootstrap.getInstances().getContextSetting().APP_EXT);
         Set<String> cmds=msgTouchMethodDispatcher.getCmds();
         touchCluster.setCmds(cmds);
         return touchCluster;

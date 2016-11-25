@@ -50,11 +50,17 @@ public class Bootstrap {
         MsgTouchMethodDispatcher msgTouchMethodDispatcher= MsgTouchServiceEngine.getInstances().loadService();
 
         //consul 服务注册
-        ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
+        //ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
         //连接注册中心
         //ZooKeeperEngine.getInstances().start(applicationContext);
         //启动netty toucher
         SocketEngine.startServer(msgTouchMethodDispatcher,applicationContext);
+
+
+    }
+
+    public synchronized void startClientSocket(){
+
     }
 
 }

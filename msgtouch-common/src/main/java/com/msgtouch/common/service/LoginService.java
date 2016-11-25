@@ -9,6 +9,6 @@ import com.msgtouch.framework.annotation.MsgService;
 @MsgService("loginService")
 public interface LoginService {
     @MsgMethod("login")
-    String login();
+    String login(String dtr);
 
 }

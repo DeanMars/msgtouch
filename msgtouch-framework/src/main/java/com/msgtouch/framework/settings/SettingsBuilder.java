@@ -54,6 +54,28 @@ public class SettingsBuilder {
         return zookeeperSetting;
     }
 
+    public static SocketServerSetting getSocketServerSetting(ApplicationContext applicationContext){
+        Environment environment=applicationContext.getEnvironment();
+        SocketServerSetting setting=new SocketServerSetting();
+        if(environment.containsProperty(Constraint.TCP_SERVER_BOSSTHREADSIZE)){
+            setting.bossThreadSize=Integer.parseInt(environment.getProperty(Constraint.TCP_SERVER_BOSSTHREADSIZE));
+        }
+        if(environment.containsProperty(Constraint.TCP_SERVER_CMDTHREADSIZE)){
+            setting.cmdThreadSize=Integer.parseInt(environment.getProperty(Constraint.TCP_SERVER_CMDTHREADSIZE));
+        }
+        if(environment.containsProperty(Constraint.TCP_SERVER_WORKERTHREADSIZE)) {
+            setting.workerThreadSize = Integer.parseInt(environment.getProperty(Constraint.TCP_SERVER_WORKERTHREADSIZE));
+        }
+
+        if(!environment.containsProperty(Constraint.TCP_SERVER_PORT)){
+            throw new IllegalArgumentException("SocketServerEngine msgtouch.tcp.toucher.port is needed ");
+        }
+        setting.port=Integer.parseInt(environment.getProperty(Constraint.TCP_SERVER_PORT));
+
+
+
+        return setting;
+    }
 
 
 

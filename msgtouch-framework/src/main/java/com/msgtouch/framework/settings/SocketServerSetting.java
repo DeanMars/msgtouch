@@ -1,13 +1,9 @@
-package com.msgtouch.framework.socket.client;
+package com.msgtouch.framework.settings;
 
 /**
  * Created by Dean on 2016/9/7.
  */
-public class SocketClientSetting {
-    //密钥
-    public String secretKey;
-    //host
-    public String host;
+public class SocketServerSetting {
     /**TCP端口**/
     public int port=8001;
     /**Netty层Worker类线程数*/

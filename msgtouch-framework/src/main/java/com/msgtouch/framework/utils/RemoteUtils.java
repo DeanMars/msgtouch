@@ -44,7 +44,7 @@ public class RemoteUtils {
 
         }
         if(remoteService.size()>0){
-            ConsulEngine.getInstance().registeConsumer();
+            //ConsulEngine.getInstance().registeConsumer();
         }
 
     }

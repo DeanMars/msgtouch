@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 public class LoginServiceImpl implements LoginService {
 
     @Override
-    public String login() {
-        return "LoginServiceImpl getMsg success";
+    public String login(String str) {
+        return "LoginServiceImpl getMsg success  ----" +str;
     }
 
 

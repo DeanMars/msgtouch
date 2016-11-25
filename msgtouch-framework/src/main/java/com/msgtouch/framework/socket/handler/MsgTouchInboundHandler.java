@@ -1,12 +1,16 @@
 package com.msgtouch.framework.socket.handler;
 
 import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.SyncRpcCallBack;
 import com.msgtouch.framework.socket.packet.MsgPacket;
+import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 /**
  * Created by Dean on 2016/9/8.
@@ -16,8 +20,6 @@ public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacke
     private static Logger logger= LoggerFactory.getLogger(MsgTouchInboundHandler.class);
 
     private MsgTouchMethodDispatcher msgTouchMethodDispatcher;
-
-    public MsgTouchInboundHandler(){}
 
     public MsgTouchInboundHandler(MsgTouchMethodDispatcher msgTouchMethodDispatcher){
         this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
@@ -30,8 +32,9 @@ public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacke
      * */
     protected void channelRead0(ChannelHandlerContext ctx, MsgPacket bilingPacket) throws Exception {
         logger.debug("MsgTouchInboundHandler channelRead0 bilingPacket={}",bilingPacket.toString());
+        ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
         if(null!=msgTouchMethodDispatcher) {
-            msgTouchMethodDispatcher.dispatcher(ctx, bilingPacket);
+            msgTouchMethodDispatcher.dispatcher(session, bilingPacket);
         }
     }
 
@@ -42,7 +45,7 @@ public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacke
      * */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        Session session=ctx.channel().attr(Session.SESSION_KEY).get();
+        ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
         logger.debug("Channel inActive:{}",ctx.channel());
 
     }
@@ -52,7 +55,7 @@ public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacke
      * */
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-        Session session=ctx.channel().attr(Session.SESSION_KEY).get();
+        ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
         logger.debug("ChannelActive:{}",ctx.channel().toString());
     }
     /**
@@ -67,8 +70,9 @@ public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacke
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
-        Session session=new Session(ctx);
+        final ISession session=new Session(ctx.channel());
         ctx.channel().attr(Session.SESSION_KEY).set(session);
+        session.setAttribute(Session.SYNC_CALLBACK_MAP, new HashMap<String, SyncRpcCallBack<?>>());
     }
 
 }

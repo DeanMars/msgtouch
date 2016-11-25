@@ -1,5 +1,9 @@
 package com.msgtouch.framework.socket.client;
 
+import com.msgtouch.framework.settings.SocketClientSetting;
+import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.handler.MsgTouchClientInitializer;
+import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -40,14 +44,14 @@ public class SocketClientEngine {
 
     }
 
-    public void startSocket() throws Exception{
+    public void bind(MsgTouchMethodDispatcher msgTouchMethodDispatcher) throws Exception{
         EventLoopGroup workerGroup=null;
         if(this.eventExecutors==null){
             workerGroup= new NioEventLoopGroup(settings.workerThreadSize);
         }else{
             workerGroup=this.eventExecutors;
         }
-        ChannelInitializer<SocketChannel> initializer=new SocketClientInitializer(settings);
+        ChannelInitializer<SocketChannel> initializer=new MsgTouchClientInitializer(settings,msgTouchMethodDispatcher);
         this.bootstrap= new Bootstrap();
         this.bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
@@ -55,13 +59,13 @@ public class SocketClientEngine {
         connect();
         log.debug("Worker thread : {}",settings.workerThreadSize);
         log.debug("Logic thread:{}",settings.cmdThreadSize);
-        log.info("SocketClientEngine connect to {} success!",settings.host+":"+settings.port);
+        log.info("MsgTouchSocketClientEngine connect to {} success!",settings.host+":"+settings.port);
     }
     public Channel getChannel(){
         return this.channel;
     }
 
-    public Session getSession(){
+    public ISession getSession(){
         return channel.attr(Session.SESSION_KEY).get();
     }
 }

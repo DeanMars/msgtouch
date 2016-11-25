@@ -1,16 +1,12 @@
 package com.msgtouch.framework.socket.dispatcher;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.msgtouch.framework.annotation.MsgEntity;
-import com.msgtouch.framework.annotation.MsgParamter;
 import com.msgtouch.framework.socket.packet.MsgPacket;
+import com.msgtouch.framework.socket.session.ISession;
+import com.msgtouch.framework.socket.session.Session;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -32,88 +28,42 @@ public class MsgTouchMethodDispatcher {
         methodInvokerMap.put(cmd, invoker);
     }
 
-    public void dispatcher(ChannelHandlerContext ctx, MsgPacket bilingPacket){
-        String cmd=bilingPacket.getCmd();
-        MsgTouchMethodInvoker bilingMethodInvoker=methodInvokerMap.get(cmd);
-        if(null==bilingMethodInvoker){
-            throw new RuntimeException("MsgTouchMethodDispatcher method cmd="+cmd+" not found!");
-        }
-        String params = bilingPacket.getParams();
-
-        if(null!=params) {
-            Class[] parameterTypes = bilingMethodInvoker.getMethod().getParameterTypes();
-            Annotation [][] annotations=bilingMethodInvoker.getMethod().getParameterAnnotations();
-            Object []obj=new Object[parameterTypes.length];
-            for( int i=0;i<parameterTypes.length;i++){
-                Class c=parameterTypes[i];
-                if(c.getName().equals(ChannelHandlerContext.class.getName()) ){
-                    obj[i]=ctx;
-                    continue;
-                }
-                if(c.getName().equals(MsgPacket.class.getName()) ){
-                    obj[i]=bilingPacket;
-                    continue;
-                }
-                Annotation [] parmaAnnotation=annotations[i];
-                for(Annotation annotation:parmaAnnotation){
-                    if(annotation instanceof MsgParamter){
-                        MsgParamter bilingParamter=(MsgParamter)annotation;
-                        String value=bilingParamter.value();
-                        String defaultValue=bilingParamter.defaultValue();
-                        JSONObject jSONObject=JSON.parseObject(params);
-                        if(null!=jSONObject){
-                            obj[i]=getValue(c,jSONObject.getString(value),defaultValue);
-                        }
-                    }else if(annotation instanceof MsgEntity){
-                        obj[i]=JSON.parseObject(params,c);
+    public void dispatcher(ISession session, MsgPacket msgPacket){
+        if(msgPacket.isCall()){
+            String cmd=msgPacket.getCmd();
+            MsgTouchMethodInvoker msgTouchMethodInvoker=methodInvokerMap.get(cmd);
+            if(null==msgTouchMethodInvoker){
+                throw new RuntimeException("MsgTouchMethodDispatcher method cmd="+cmd+" not found!");
+            }
+            Object[] params = msgPacket.getParams();
+            if(null!=params) {
+                try {
+                    Object ret=msgTouchMethodInvoker.invoke(params);
+                    msgPacket.setParams(new Object[]{ret});
+                    msgPacket.setCall(false);
+                    Channel channel=session.getChannel();
+                    if(channel.isActive()) {
+                        channel.writeAndFlush(msgPacket);
+                    }else{
+                        logger.error("channel is not active:packet = {}",msgPacket);
                     }
+                } catch (Exception e) {
+                    logger.info("MsgTouchMethodDispatcher invoke method exception ！！");
+                    e.printStackTrace();
                 }
+
             }
-            try {
-                Object ret=bilingMethodInvoker.invoke(obj);
-                bilingPacket.setParams(JSON.toJSONString(ret));
-                Channel channel=ctx.channel();
-                if(channel.isActive()) {
-                    channel.writeAndFlush(bilingPacket);
-                }else{
-                    logger.error("channel is not active:packet = {}",bilingPacket);
-                }
-            } catch (Exception e) {
-                logger.info("MsgTouchMethodDispatcher invoke method exception ！！");
-                e.printStackTrace();
-            }
-
-        }
-
-    }
-
-    private Object getValue(Class c,String value,String defaultValue){
-        if(null==value||"".equals(value)||"null".equals(value)){
-            return getValue(c,defaultValue);
         }else{
-            return getValue(c,value);
-        }
-    }
-
-    private Object getValue(Class c,String value){
-        String type=c.getName();
-        if (type.equals("java.lang.String")) {
-            return value.toString();
-        } else if (type.equals("int")||type.equals("java.lang.Integer")) {
-            return Integer.parseInt(value);
-        } else if (type.equals("long")||type.equals("java.lang.Long")) {
-            return Long.parseLong(value);
-        } else if (type.equals("boolean") || type.equals("java.lang.Boolean")) {
-            if("true".equals(value)){
-                return true;
+            SyncRpcCallBack callBack=session.getAttribute(Session.SYNC_CALLBACK_MAP).get(msgPacket.getUuid());
+            if(callBack!=null){
+                if(msgPacket.getParams().length==1){
+                    callBack.processResult(session,msgPacket.getParams()[0]);
+                }else{
+                    callBack.processResult(session, msgPacket.getParams());
+                }
             }
-            return false;
-        } else if (type.equals("double")||type.equals("java.lang.Double")) {
-            return Double.parseDouble(value);
-        } else if (type.equals("float") || type.equals("java.lang.Float")) {
-            return  Float.parseFloat(value);
         }
-        return null;
+
     }
 
 
