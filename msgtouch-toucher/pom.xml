@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>msgtouch-server</artifactId>
+    <artifactId>msgtouch-toucher</artifactId>
 
     <dependencies>
         <dependency>
