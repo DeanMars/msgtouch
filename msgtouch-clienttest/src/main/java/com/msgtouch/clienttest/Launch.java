@@ -19,15 +19,15 @@ public class Launch {
     public static void main(String []args){
 
         SocketClientSetting socketClientSetting=new SocketClientSetting();
-        socketClientSetting.host="192.168.21.40";
+        socketClientSetting.host="127.0.0.1";
         socketClientSetting.port=8001;
 
 
         try {
             MsgTouchClientApi msgTouchClientApi=SocketEngine.startClient(socketClientSetting);
             LoginService loginService=msgTouchClientApi.getRpcCallProxy(true, LoginService.class);
-            logger.info(loginService.login("32432423423"));
-
+           // logger.info(loginService.login("32432423423"));
+            logger.info(loginService.test(true,"1",'2',(byte)1,(short)2,3,4.0f,5.0,6L));
         } catch (Exception e) {
             e.printStackTrace();
         }
