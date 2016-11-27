@@ -17,7 +17,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public String test(boolean arg1, String arg2, char arg3, byte arg4, short arg5, int arg6, float arg7,
                        double arg8, long arg9) {
-        return "boolean="+arg1+",char="+arg3+",byte="+arg4+",short="+arg5+",int="+arg6+",float="+arg7
+        return "boolean="+arg1+",String="+arg2+",char="+arg3+",byte="+arg4+",short="+arg5+",int="+arg6+",float="+arg7
                 +",double="+arg8+",long="+arg9;
     }
 
