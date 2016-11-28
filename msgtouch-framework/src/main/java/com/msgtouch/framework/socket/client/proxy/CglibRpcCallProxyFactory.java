@@ -12,6 +12,15 @@ import java.util.Map;
  * Created by Dean on 2016/11/23.
  */
 public class CglibRpcCallProxyFactory implements RpcCallProxyFactory{
+
+    private static CglibRpcCallProxyFactory cglibRpcCallProxyFactory=new CglibRpcCallProxyFactory();
+
+    private CglibRpcCallProxyFactory(){}
+
+    public static CglibRpcCallProxyFactory getInstance(){
+        return cglibRpcCallProxyFactory;
+    }
+
     private Map<Class,RpcCallProxyFactory.CallProxyEntry> proxyCache=new HashMap<Class,RpcCallProxyFactory.CallProxyEntry>();
     private static final CglibRpcCallBack SYNC_CALL_CGLIB_INTERCEPTOR=new CglibRpcCallBack(true);
     private static final CglibRpcCallBack ASYNC_CALL_CGLIB_INTERCEPTOR=new CglibRpcCallBack(false);

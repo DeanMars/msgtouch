@@ -12,7 +12,7 @@ public interface LoginService {
     String login(String dtr);
 
 
-    @MsgMethod("login")
+    @MsgMethod("test")
     String test(boolean arg1,String arg2,char arg3,byte arg4,short arg5,int arg6,float arg7,double arg8,long arg9);
 
 

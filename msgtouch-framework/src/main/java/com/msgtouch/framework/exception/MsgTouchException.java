@@ -9,4 +9,7 @@ import org.slf4j.LoggerFactory;
 public class MsgTouchException extends RuntimeException{
     private Logger logger= LoggerFactory.getLogger(MsgTouchException.class);
 
+    public MsgTouchException(String message) {
+        super(message);
+    }
 }

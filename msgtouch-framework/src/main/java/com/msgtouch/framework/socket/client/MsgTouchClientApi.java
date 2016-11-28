@@ -25,8 +25,9 @@ public class MsgTouchClientApi {
     }
 
     public MsgTouchClientApi initComponents(SocketClientEngine socketClientEngine){
+        syncCallTimeout=socketClientEngine.getSettings().timeOutSecond;
         this.socketClientEngine=socketClientEngine;
-        this.rpcCallProxyFactory=new CglibRpcCallProxyFactory();
+        this.rpcCallProxyFactory=CglibRpcCallProxyFactory.getInstance();
         return msgTouchClientApi;
     }
 
@@ -36,7 +37,7 @@ public class MsgTouchClientApi {
     }
 
 
-    public <T> T syncRpcCall(String clusterName, String cmd, Class<T> resultType, Object... params) throws Exception{
+    public <T> T syncRpcCall(String cmd, Class<T> resultType, Object... params) throws Exception{
         MsgPacket packet=new MsgPacket(cmd,params);
         long before= System.currentTimeMillis();
         T result=getSession().syncRpcSend(packet, resultType, (long) syncCallTimeout, TimeUnit.SECONDS);

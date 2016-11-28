@@ -33,7 +33,6 @@ public class CglibRpcCallBack implements MethodInterceptor {
             throw new IllegalArgumentException("Interface has no @MsgService annotation:class = "+o.getClass());
         }
         MsgService rpcControl = (MsgService) controlInterface.getAnnotation(MsgService.class);
-        String clusterName= rpcControl.value();
         MsgMethod cmdMethod=method.getAnnotation(MsgMethod.class);
         if(cmdMethod==null){
             return  null;
@@ -41,7 +40,7 @@ public class CglibRpcCallBack implements MethodInterceptor {
         String cmd=rpcControl.value()+"/"+method.getAnnotation(MsgMethod.class).value();
         Class returnType=method.getReturnType();
         if(sync){
-            return rpcClientApi.syncRpcCall(clusterName,cmd,returnType,params);
+            return rpcClientApi.syncRpcCall(cmd,returnType,params);
         }else{
            // rpcClientApi.asyncRpcCall(clusterName,cmd,params);
             return null;

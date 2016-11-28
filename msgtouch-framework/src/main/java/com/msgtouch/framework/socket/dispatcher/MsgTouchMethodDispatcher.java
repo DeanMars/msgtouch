@@ -1,5 +1,6 @@
 package com.msgtouch.framework.socket.dispatcher;
 
+import com.msgtouch.framework.exception.MsgTouchException;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
@@ -22,8 +23,8 @@ public class MsgTouchMethodDispatcher {
 
     public void addMethod(String cmd,MsgTouchMethodInvoker invoker){
         if(methodInvokerMap.containsKey(cmd)){
-            logger.warn("RpcService method has exists:cmd={}",cmd);
-            return;
+            logger.error("RpcService method has exists:cmd={}",cmd);
+            throw new MsgTouchException("RpcService method "+cmd+"has exists");
         }
         methodInvokerMap.put(cmd, invoker);
     }

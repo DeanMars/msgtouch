@@ -71,9 +71,6 @@ public class SettingsBuilder {
             throw new IllegalArgumentException("SocketServerEngine msgtouch.tcp.toucher.port is needed ");
         }
         setting.port=Integer.parseInt(environment.getProperty(Constraint.TCP_SERVER_PORT));
-
-
-
         return setting;
     }
 

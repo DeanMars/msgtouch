@@ -21,7 +21,7 @@ public class Launch {
         SocketClientSetting socketClientSetting=new SocketClientSetting();
         socketClientSetting.host="127.0.0.1";
         socketClientSetting.port=8001;
-
+        socketClientSetting.timeOutSecond=20;
 
         try {
             MsgTouchClientApi msgTouchClientApi=SocketEngine.startClient(socketClientSetting);

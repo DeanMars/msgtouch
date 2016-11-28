@@ -8,6 +8,8 @@ public class SocketClientSetting {
     public String secretKey;
     //host
     public String host;
+
+    public int timeOutSecond;
     /**TCP端口**/
     public int port=8001;
     /**Netty层Worker类线程数*/

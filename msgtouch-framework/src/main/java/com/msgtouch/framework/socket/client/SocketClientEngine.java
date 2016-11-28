@@ -68,4 +68,8 @@ public class SocketClientEngine {
     public ISession getSession(){
         return channel.attr(Session.SESSION_KEY).get();
     }
+
+    public SocketClientSetting getSettings() {
+        return settings;
+    }
 }
