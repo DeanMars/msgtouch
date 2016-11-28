@@ -15,6 +15,7 @@ public class SettingsBuilder {
 
     private static ZookeeperSetting zookeeperSetting=null;
 
+    private static ConsulSetting consulSetting=null;
 
     public static void init(ApplicationContext applicationContext){
         if(null==environment){
@@ -52,6 +53,33 @@ public class SettingsBuilder {
             }
         }
         return zookeeperSetting;
+    }
+
+
+    public static ConsulSetting getConsulSetting(){
+        if(null==consulSetting) {
+            consulSetting = new ConsulSetting();
+            if (environment.containsProperty(Constraint.APP_NAME)) {
+                consulSetting.name = environment.getProperty(Constraint.APP_NAME);
+            }
+            if (environment.containsProperty(Constraint.CONSUL_HOSTANDPORT)) {
+                consulSetting.consulHostAndPort = environment.getProperty(Constraint.CONSUL_HOSTANDPORT);
+            }
+            if (environment.containsProperty(Constraint.LOCAL_IP)) {
+                consulSetting.ipAddress = environment.getProperty(Constraint.LOCAL_IP);
+            }
+            if (environment.containsProperty(Constraint.TCP_SERVER_PORT)) {
+                consulSetting.port = Integer.parseInt(environment.getProperty(Constraint.TCP_SERVER_PORT));
+            }
+            if (environment.containsProperty(Constraint.CONSUL_HEALTHURL)) {
+                consulSetting.healthUrl = environment.getProperty(Constraint.CONSUL_HEALTHURL);
+            }
+            if (environment.containsProperty(Constraint.CONSUL_HEALTHINTERVALSECOND)) {
+                consulSetting.healthIntervalSecond = Integer.parseInt(environment.getProperty(Constraint.CONSUL_HEALTHINTERVALSECOND));
+            }
+            consulSetting.id = consulSetting.name + "_" + consulSetting.ipAddress;
+        }
+        return consulSetting;
     }
 
     public static SocketServerSetting getSocketServerSetting(ApplicationContext applicationContext){

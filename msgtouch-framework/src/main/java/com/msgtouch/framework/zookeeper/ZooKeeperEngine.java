@@ -104,7 +104,7 @@ public class ZooKeeperEngine {
     }
 
     private void regesiteService(MsgTouchMethodDispatcher msgTouchMethodDispatcher){
-        List<String> serviceList= msgTouchMethodDispatcher.getServicelist();
+        List<String> serviceList= msgTouchMethodDispatcher.getClusterlist();
         ServiceWatcher serviceWatcher=new ServiceWatcher();
         for(String serviceName:serviceList){
 

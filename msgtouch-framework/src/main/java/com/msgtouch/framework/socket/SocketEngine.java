@@ -18,9 +18,8 @@ import org.springframework.context.ApplicationContext;
 public class SocketEngine {
     private static Logger logger= LoggerFactory.getLogger(SocketEngine.class);
 
-    public static void startServer(ApplicationContext applicationContext){
+    public static void startServer(ApplicationContext applicationContext,MsgTouchMethodDispatcher msgTouchMethodDispatcher){
         //msg service加载
-        MsgTouchMethodDispatcher msgTouchMethodDispatcher= MsgTouchServiceEngine.getInstances().loadService();
         SocketServerSetting setting= SettingsBuilder.getSocketServerSetting(applicationContext);
         logger.info("SocketEngine startServer bossThreadSize={},cmdThreadSize={},workerThreadSize={},port={}",
                 setting.bossThreadSize, setting.cmdThreadSize,setting.workerThreadSize,setting.port);

@@ -33,7 +33,8 @@ public class RemoteUtils {
                 for(Field field:fields){
                     if(ClassUtils.hasAnnotation(field, RpcService.class)){
                         Class fieldClass=field.getType();
-                        remoteService.add(fieldClass.getName());
+                        RpcService rpcService=(RpcService)fieldClass.getAnnotation(RpcService.class);
+                        remoteService.add(rpcService.value());
                         logger.debug("RemoteUtils getRpcServices RpcService={} "+fieldClass.getName());
                         Object classValue=CglibRpcCallProxyFactory.getInstance().getRpcCallProxy(true,fieldClass);
                         field.setAccessible(true);

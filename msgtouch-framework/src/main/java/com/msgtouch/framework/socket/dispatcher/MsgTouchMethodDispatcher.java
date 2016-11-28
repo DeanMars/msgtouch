@@ -17,7 +17,7 @@ public class MsgTouchMethodDispatcher {
     private static Logger logger= LoggerFactory.getLogger(MsgTouchMethodDispatcher.class);
 
     private Map<String,MsgTouchMethodInvoker> methodInvokerMap =new HashMap<String,MsgTouchMethodInvoker>();
-    private List<String> servicelist=new ArrayList<String>();
+    private List<String> clusterList=new ArrayList<String>();
 
     public MsgTouchMethodDispatcher(){}
 
@@ -72,13 +72,13 @@ public class MsgTouchMethodDispatcher {
         return methodInvokerMap.keySet();
     }
 
-    public void addServiceClass(String service){
-        if(!servicelist.contains(service)){
-            servicelist.add(service);
+    public void addCluster(String cluster){
+        if(!clusterList.contains(cluster)){
+            clusterList.add(cluster);
         }
     }
 
-    public List<String> getServicelist() {
-        return servicelist;
+    public List<String> getClusterlist() {
+        return clusterList;
     }
 }

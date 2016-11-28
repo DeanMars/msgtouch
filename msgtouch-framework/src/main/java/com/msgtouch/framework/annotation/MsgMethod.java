@@ -9,5 +9,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Documented
 public @interface MsgMethod {
+    //集群名
     String value();
 }

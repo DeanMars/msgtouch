@@ -1,6 +1,7 @@
 package com.msgtouch.framework;
 
 
+import com.msgtouch.framework.consul.ConsulEngine;
 import com.msgtouch.framework.context.SpringBeanAccess;
 import com.msgtouch.framework.settings.SettingsBuilder;
 import com.msgtouch.framework.settings.SocketClientSetting;
@@ -10,6 +11,8 @@ import com.msgtouch.framework.socket.dispatcher.MsgTouchServiceEngine;
 import com.msgtouch.framework.utils.RemoteUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.List;
 
 /**
  * Created by Dean on 2016/9/5.
@@ -42,13 +45,13 @@ public class Bootstrap {
     public synchronized void startServerSocket(ApplicationContext applicationContext){
         //初始化上下文
         initContext(applicationContext);
-
+        MsgTouchMethodDispatcher msgTouchMethodDispatcher= MsgTouchServiceEngine.getInstances().loadService();
         //consul 服务注册
-        //ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
+        ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
         //连接注册中心
         //ZooKeeperEngine.getInstances().start(applicationContext);
         //启动netty toucher
-        SocketEngine.startServer(applicationContext);
+        SocketEngine.startServer(applicationContext,msgTouchMethodDispatcher);
 
     }
 
@@ -56,9 +59,12 @@ public class Bootstrap {
         //初始化上下文
         initContext(applicationContext);
         //rpc service加载
-        RemoteUtils.getRpcServices((ConfigurableApplicationContext)applicationContext);
+        List<String> rpcServiceList=RemoteUtils.getRpcServices((ConfigurableApplicationContext)applicationContext);
 
-        SocketClientSetting socketClientSetting=new SocketClientSetting();
+
+        ConsulEngine.getInstance().findServices(rpcServiceList);
+
+        /*SocketClientSetting socketClientSetting=new SocketClientSetting();
         socketClientSetting.host="127.0.0.1";
         socketClientSetting.port=8001;
         socketClientSetting.timeOutSecond=20;
@@ -67,7 +73,7 @@ public class Bootstrap {
             SocketEngine.startClient(socketClientSetting);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 }

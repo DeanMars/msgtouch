@@ -43,7 +43,8 @@ public class MsgTouchServiceEngine {
             Class controlInterface=null;
             for(Class interfaceclass:interfaces){
                 if(ClassUtils.hasAnnotation(interfaceclass,MsgService.class)){
-                    msgTouchMethodDispatcher.addServiceClass(interfaceclass.getName());
+                    MsgService msgService=(MsgService)interfaceclass.getAnnotation(MsgService.class);
+                    msgTouchMethodDispatcher.addCluster(msgService.value());
                     controlInterface=interfaceclass;
                     break;
                 }
