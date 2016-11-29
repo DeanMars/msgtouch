@@ -89,4 +89,6 @@ public interface ISession {
 	 * @return 返回结果
 	 * */
 	<T> T syncRpcSend(MsgPacket packet, Class<T> resultType, long timeout, TimeUnit unit)throws InterruptedException,ExecutionException, TimeoutException;
+
+	public <T> T pushMsg(T t, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException ;
 }

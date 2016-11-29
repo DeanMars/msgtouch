@@ -28,9 +28,9 @@ public class SocketEngine {
 
 
     public static MsgTouchClientApi startClient(SocketClientSetting socketClientSetting)throws Exception{
-        SocketClientEngine socketClientEngine=new SocketClientEngine(socketClientSetting);
-        MsgTouchMethodDispatcher msgTouchMethodDispatcher=new MsgTouchMethodDispatcher();
-        socketClientEngine.bind(msgTouchMethodDispatcher);
+        MsgTouchMethodDispatcher msgTouchMethodDispatcher=new MsgTouchMethodDispatcher(true);
+        SocketClientEngine socketClientEngine=new SocketClientEngine(socketClientSetting,msgTouchMethodDispatcher);
+        socketClientEngine.bind();
         return MsgTouchClientApi.getInstance().initComponents(socketClientEngine);
     }
 

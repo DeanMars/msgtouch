@@ -5,6 +5,7 @@ import com.msgtouch.framework.socket.dispatcher.SyncRpcCallBack;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
+import com.msgtouch.framework.socket.session.SessionManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -56,6 +57,7 @@ public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacke
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
         ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
+        SessionManager.getInstance().addAnonymousSession(session);
         logger.debug("ChannelActive:{}",ctx.channel().toString());
     }
     /**

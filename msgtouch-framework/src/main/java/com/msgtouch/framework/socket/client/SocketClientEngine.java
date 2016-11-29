@@ -21,14 +21,15 @@ import org.slf4j.LoggerFactory;
  */
 public class SocketClientEngine {
     private static final Logger log= LoggerFactory.getLogger(SocketClientEngine.class);
-
+    private MsgTouchMethodDispatcher msgTouchMethodDispatcher;
     private SocketClientSetting settings;
     private EventLoopGroup eventExecutors;
     private Channel channel;
     private Bootstrap bootstrap;
 
-    public SocketClientEngine(SocketClientSetting socketClientSetting) {
+    public SocketClientEngine(SocketClientSetting socketClientSetting,MsgTouchMethodDispatcher msgTouchMethodDispatcher) {
         this.settings=socketClientSetting;
+        this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
     }
 
     public void connect() throws Exception{
@@ -44,7 +45,8 @@ public class SocketClientEngine {
 
     }
 
-    public void bind(MsgTouchMethodDispatcher msgTouchMethodDispatcher) throws Exception{
+    public void bind() throws Exception{
+
         EventLoopGroup workerGroup=null;
         if(this.eventExecutors==null){
             workerGroup= new NioEventLoopGroup(settings.workerThreadSize);
@@ -71,5 +73,9 @@ public class SocketClientEngine {
 
     public SocketClientSetting getSettings() {
         return settings;
+    }
+
+    public MsgTouchMethodDispatcher getMsgTouchMethodDispatcher() {
+        return msgTouchMethodDispatcher;
     }
 }

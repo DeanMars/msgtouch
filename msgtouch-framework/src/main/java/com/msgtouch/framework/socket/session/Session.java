@@ -171,6 +171,25 @@ public class Session implements ISession{
 		}
 	}
 
+	public <T> T pushMsg(T t, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException {
+		MsgPacket packet=new MsgPacket("",new Object[]{t});
+		packet.setUuid(UUID.randomUUID().toString());
+		packet.setCall(true);
+		String uuid=packet.getUuid();
+		try {
+			DefaultProgressivePromise<T> syncPromise=new DefaultProgressivePromise<T>(channel.eventLoop());
+			SyncRpcCallBack callBack=new SyncRpcCallBack(syncPromise);
+			Map<String,SyncRpcCallBack<?>> callBackMap=getAttribute(SYNC_CALLBACK_MAP);
+			callBackMap.put(uuid, callBack);
+			writeAndFlush(packet);
+			T result=syncPromise.get(timeoutSecond, TimeUnit.SECONDS);
+			callBackMap.remove(uuid);
+			return result;
+		}finally {
+			getAttribute(SYNC_CALLBACK_MAP).remove(uuid);
+		}
+	}
+
 	/*public void asyncRpcSend(MsgPacket packet,RpcCallback rpcCallback){
 		String uuid= UUID.randomUUID().toString();
 		packet.setUuid(uuid);

@@ -1,6 +1,7 @@
 package com.msgtouch.clienttest;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.msgtouch.clienttest.listener.PushListener;
 import com.msgtouch.common.service.LoginService;
 import com.msgtouch.framework.settings.SocketClientSetting;
 import com.msgtouch.framework.socket.SocketEngine;
@@ -25,9 +26,11 @@ public class Launch {
 
         try {
             MsgTouchClientApi msgTouchClientApi=SocketEngine.startClient(socketClientSetting);
-            LoginService loginService=msgTouchClientApi.getRpcCallProxy(true, LoginService.class);
+            //LoginService loginService=msgTouchClientApi.getRpcCallProxy(true, LoginService.class);
            // logger.info(loginService.login("32432423423"));
-            logger.info(loginService.test(true,"1",'2',(byte)1,(short)2,3,4.0f,5.0,6L));
+           // logger.info(loginService.test(true,"1",'2',(byte)1,(short)2,3,4.0f,5.0,6L));
+            msgTouchClientApi.addPushedListener(new PushListener());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

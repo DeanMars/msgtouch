@@ -1,6 +1,7 @@
 package com.msgtouch.framework.socket.client;
 
 import com.msgtouch.framework.socket.client.proxy.CglibRpcCallProxyFactory;
+import com.msgtouch.framework.socket.dispatcher.MsgPushedListener;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import org.slf4j.Logger;
@@ -48,6 +49,11 @@ public class MsgTouchClientApi {
 
     public ISession getSession(){
         return  socketClientEngine.getSession();
+    }
+
+
+    public void addPushedListener(MsgPushedListener msgPushedListener){
+        socketClientEngine.getMsgTouchMethodDispatcher().addPushedListener(msgPushedListener);
     }
 
 }

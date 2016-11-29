@@ -1,5 +1,6 @@
 package com.msgtouch.framework.utils;
 
+import com.msgtouch.framework.annotation.MsgService;
 import com.msgtouch.framework.annotation.RpcService;
 import com.msgtouch.framework.consul.ConsulEngine;
 import com.msgtouch.framework.socket.client.proxy.CglibRpcCallProxyFactory;
@@ -33,8 +34,8 @@ public class RemoteUtils {
                 for(Field field:fields){
                     if(ClassUtils.hasAnnotation(field, RpcService.class)){
                         Class fieldClass=field.getType();
-                        RpcService rpcService=(RpcService)fieldClass.getAnnotation(RpcService.class);
-                        remoteService.add(rpcService.value());
+                        MsgService msgService=(MsgService)fieldClass.getAnnotation(MsgService.class);
+                        remoteService.add(msgService.value());
                         logger.debug("RemoteUtils getRpcServices RpcService={} "+fieldClass.getName());
                         Object classValue=CglibRpcCallProxyFactory.getInstance().getRpcCallProxy(true,fieldClass);
                         field.setAccessible(true);
