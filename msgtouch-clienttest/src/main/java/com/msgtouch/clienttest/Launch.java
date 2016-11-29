@@ -1,8 +1,6 @@
 package com.msgtouch.clienttest;
 
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.msgtouch.clienttest.listener.PushListener;
-import com.msgtouch.common.service.LoginService;
 import com.msgtouch.framework.settings.SocketClientSetting;
 import com.msgtouch.framework.socket.SocketEngine;
 import com.msgtouch.framework.socket.client.MsgTouchClientApi;
@@ -16,7 +14,6 @@ import org.slf4j.LoggerFactory;
 public class Launch {
 
     private  static Logger logger= LoggerFactory.getLogger(Launch.class);
-    private static final SerializerFeature[] FEATURES=new SerializerFeature[]{SerializerFeature.WriteClassName};
     public static void main(String []args){
 
         SocketClientSetting socketClientSetting=new SocketClientSetting();
