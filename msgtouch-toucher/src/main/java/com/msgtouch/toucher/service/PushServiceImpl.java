@@ -18,11 +18,11 @@ import java.util.concurrent.TimeoutException;
 public class PushServiceImpl {
     private  static Logger logger= LoggerFactory.getLogger(PushServiceImpl.class);
 
-    public void pushAll(){
+    public void pushAll(String msg){
         Collection<ISession> list=SessionManager.getInstance().getAllSession();
 
         TestVo testVo=new TestVo();
-        testVo.setRequest("request1111");
+        testVo.setRequest(msg);
 
         for(ISession session:list){
             try {

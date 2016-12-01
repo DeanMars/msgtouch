@@ -3,6 +3,7 @@ package com.msgtouch.toucher.controller;
 import com.msgtouch.toucher.service.PushServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -13,8 +14,8 @@ public class TestController {
     @Autowired
     private PushServiceImpl pushServiceImpl;
     @RequestMapping("pushAll")
-    public String  pushAll(){
-        pushServiceImpl.pushAll();
+    public String  pushAll(@RequestParam("msg")String msg){
+        pushServiceImpl.pushAll(msg);
         return "";
     }
 

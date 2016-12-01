@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Dean on 2016/9/8.
@@ -20,16 +24,35 @@ public class MsgTouchMethodDispatcher {
 
     private Map<String,MsgTouchMethodInvoker> methodInvokerMap =new HashMap<String,MsgTouchMethodInvoker>();
     private Map<String,List<MsgPushedListener>> pushedListenerMap=new HashMap<String,List<MsgPushedListener>>();
-
     private List<String> clusterList=new ArrayList<String>();
     private boolean handlerPush;
-    public MsgTouchMethodDispatcher(){
+    public MsgTouchMethodDispatcher(int threadSize){
         this.handlerPush=false;
+        initPool(threadSize);
+    }
+    public MsgTouchMethodDispatcher(int threadSize,boolean handlerPush){
+        this.handlerPush=handlerPush;
+        initPool(threadSize);
+    }
+    private ExecutorService pool=null;
+
+    private void initPool(int threadSize){
+        if(null==pool){
+            pool=Executors.newFixedThreadPool(threadSize, new ThreadFactory() {
+                private AtomicInteger size = new AtomicInteger();
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread thread = new Thread(r);
+                    thread.setName("Rpc-Dispatcher-" + size.incrementAndGet());
+                    if (thread.isDaemon()) {
+                        thread.setDaemon(false);
+                    }
+                    return thread;
+                }
+            });
+        }
     }
 
-    public MsgTouchMethodDispatcher(boolean handlerPush){
-        this.handlerPush=handlerPush;
-    }
 
     public void addMethod(String cmd,MsgTouchMethodInvoker invoker){
         if(methodInvokerMap.containsKey(cmd)){
@@ -39,46 +62,52 @@ public class MsgTouchMethodDispatcher {
         methodInvokerMap.put(cmd, invoker);
     }
 
-    public void dispatcher(ISession session, MsgPacket msgPacket){
-        if(msgPacket.isCall()){
-            String cmd=msgPacket.getCmd();
-            MsgTouchMethodInvoker msgTouchMethodInvoker=methodInvokerMap.get(cmd);
-            if(null==msgTouchMethodInvoker){
-                if(handlerPush){
-                    handlerPush(session,msgPacket);
-                    return;
-                }else{
-                    throw new RuntimeException("MsgTouchMethodDispatcher method cmd="+cmd+" not found!");
-                }
-            }
-            Object[] params = msgPacket.getParams();
-            if(null!=params) {
-                try {
-                    Object ret=msgTouchMethodInvoker.invoke(params);
-                    msgPacket.setParams(new Object[]{ret});
-                    msgPacket.setCall(false);
-                    Channel channel=session.getChannel();
-                    if(channel.isActive()) {
-                        channel.writeAndFlush(msgPacket);
-                    }else{
-                        logger.error("channel is not active:packet = {}",msgPacket);
+    public void dispatcher(final ISession session, final MsgPacket msgPacket){
+        pool.submit(new Runnable() {
+            @Override
+            public void run() {
+                if(msgPacket.isCall()){
+                    String cmd=msgPacket.getCmd();
+                    MsgTouchMethodInvoker msgTouchMethodInvoker=methodInvokerMap.get(cmd);
+                    if(null==msgTouchMethodInvoker){
+                        if(handlerPush){
+                            handlerPush(session,msgPacket);
+                            return;
+                        }else{
+                            throw new RuntimeException("MsgTouchMethodDispatcher method cmd="+cmd+" not found!");
+                        }
                     }
-                } catch (Exception e) {
-                    logger.info("MsgTouchMethodDispatcher invoke method exception ！！");
-                    e.printStackTrace();
-                }
+                    Object[] params = msgPacket.getParams();
+                    if(null!=params) {
+                        try {
+                            Object ret=msgTouchMethodInvoker.invoke(params);
+                            msgPacket.setParams(new Object[]{ret});
+                            msgPacket.setCall(false);
+                            Channel channel=session.getChannel();
+                            if(channel.isActive()) {
+                                channel.writeAndFlush(msgPacket);
+                            }else{
+                                logger.error("channel is not active:packet = {}",msgPacket);
+                            }
+                        } catch (Exception e) {
+                            logger.info("MsgTouchMethodDispatcher invoke method exception ！！");
+                            e.printStackTrace();
+                        }
 
-            }
-        }else{
-            SyncRpcCallBack callBack=session.getAttribute(Session.SYNC_CALLBACK_MAP).get(msgPacket.getUuid());
-            if(callBack!=null){
-                if(msgPacket.getParams().length==1){
-                    callBack.processResult(session,msgPacket.getParams()[0]);
+                    }
                 }else{
-                    callBack.processResult(session, msgPacket.getParams());
+                    SyncRpcCallBack callBack=session.getAttribute(Session.SYNC_CALLBACK_MAP).get(msgPacket.getUuid());
+                    if(callBack!=null){
+                        if(msgPacket.getParams().length==1){
+                            callBack.processResult(session,msgPacket.getParams()[0]);
+                        }else{
+                            callBack.processResult(session, msgPacket.getParams());
+                        }
+                    }
                 }
             }
-        }
+        });
+
 
     }
 

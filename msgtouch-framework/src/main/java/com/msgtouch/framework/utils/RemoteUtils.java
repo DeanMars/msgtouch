@@ -2,14 +2,10 @@ package com.msgtouch.framework.utils;
 
 import com.msgtouch.framework.annotation.MsgService;
 import com.msgtouch.framework.annotation.RpcService;
-import com.msgtouch.framework.consul.ConsulEngine;
-import com.msgtouch.framework.socket.client.proxy.CglibRpcCallProxyFactory;
+import com.msgtouch.framework.socket.client.CglibRpcCallProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.lang.reflect.Field;

@@ -1,4 +1,4 @@
-package com.msgtouch.framework.socket.client.proxy;
+package com.msgtouch.framework.socket.client;
 
 /**
  * Created by Dean on 2016/11/23.

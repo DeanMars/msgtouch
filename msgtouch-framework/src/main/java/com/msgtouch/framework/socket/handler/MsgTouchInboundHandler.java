@@ -47,6 +47,7 @@ public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacke
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
+        SessionManager.getInstance().removeSession(session);
         logger.debug("Channel inActive:{}",ctx.channel());
 
     }

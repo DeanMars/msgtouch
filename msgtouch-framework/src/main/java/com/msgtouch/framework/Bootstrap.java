@@ -5,6 +5,7 @@ import com.msgtouch.framework.consul.ConsulEngine;
 import com.msgtouch.framework.context.SpringBeanAccess;
 import com.msgtouch.framework.settings.SettingsBuilder;
 import com.msgtouch.framework.settings.SocketClientSetting;
+import com.msgtouch.framework.settings.SocketServerSetting;
 import com.msgtouch.framework.socket.SocketEngine;
 import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
 import com.msgtouch.framework.socket.dispatcher.MsgTouchServiceEngine;
@@ -35,7 +36,7 @@ public class Bootstrap {
     }
 
     private void initContext(ApplicationContext applicationContext){
-        //初始化上下文
+        //上下文
         SpringBeanAccess.getInstances().initSpringContext(applicationContext);
         //初始化配置
         SettingsBuilder.init(applicationContext);
@@ -45,13 +46,16 @@ public class Bootstrap {
     public synchronized void startServerSocket(ApplicationContext applicationContext){
         //初始化上下文
         initContext(applicationContext);
-        MsgTouchMethodDispatcher msgTouchMethodDispatcher= MsgTouchServiceEngine.getInstances().loadService();
+        SocketServerSetting setting= SettingsBuilder.getSocketServerSetting(applicationContext);
+        MsgTouchMethodDispatcher msgTouchMethodDispatcher= MsgTouchServiceEngine.getInstances().loadService(setting.cmdThreadSize);
         //consul 服务注册
-        ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
+        //ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
+
+
         //连接注册中心
         //ZooKeeperEngine.getInstances().start(applicationContext);
         //启动netty toucher
-        SocketEngine.startServer(applicationContext,msgTouchMethodDispatcher);
+        SocketEngine.startServer(setting,msgTouchMethodDispatcher);
 
     }
 
@@ -62,7 +66,7 @@ public class Bootstrap {
         List<String> rpcServiceList=RemoteUtils.getRpcServices((ConfigurableApplicationContext)applicationContext);
 
 
-        ConsulEngine.getInstance().findServices(rpcServiceList);
+       // ConsulEngine.getInstance().findServices(rpcServiceList);
 
         /*SocketClientSetting socketClientSetting=new SocketClientSetting();
         socketClientSetting.host="127.0.0.1";

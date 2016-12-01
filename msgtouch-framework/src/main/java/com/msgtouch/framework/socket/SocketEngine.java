@@ -18,9 +18,8 @@ import org.springframework.context.ApplicationContext;
 public class SocketEngine {
     private static Logger logger= LoggerFactory.getLogger(SocketEngine.class);
 
-    public static void startServer(ApplicationContext applicationContext,MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    public static void startServer( SocketServerSetting setting,MsgTouchMethodDispatcher msgTouchMethodDispatcher){
         //msg service加载
-        SocketServerSetting setting= SettingsBuilder.getSocketServerSetting(applicationContext);
         logger.info("SocketEngine startServer bossThreadSize={},cmdThreadSize={},workerThreadSize={},port={}",
                 setting.bossThreadSize, setting.cmdThreadSize,setting.workerThreadSize,setting.port);
         new SocketServerEngine(setting).bind(msgTouchMethodDispatcher);
@@ -28,7 +27,7 @@ public class SocketEngine {
 
 
     public static MsgTouchClientApi startClient(SocketClientSetting socketClientSetting)throws Exception{
-        MsgTouchMethodDispatcher msgTouchMethodDispatcher=new MsgTouchMethodDispatcher(true);
+        MsgTouchMethodDispatcher msgTouchMethodDispatcher=new MsgTouchMethodDispatcher(socketClientSetting.cmdThreadSize,true);
         SocketClientEngine socketClientEngine=new SocketClientEngine(socketClientSetting,msgTouchMethodDispatcher);
         socketClientEngine.bind();
         return MsgTouchClientApi.getInstance().initComponents(socketClientEngine);

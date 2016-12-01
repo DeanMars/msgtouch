@@ -1,11 +1,11 @@
-package com.msgtouch.framework.socket.client.proxy;
+package com.msgtouch.framework.socket.client;
 
 import com.msgtouch.framework.annotation.MsgMethod;
 import com.msgtouch.framework.annotation.MsgService;
-import com.msgtouch.framework.socket.client.MsgTouchClientApi;
 import com.msgtouch.framework.utils.ClassUtils;
-import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.cglib.proxy.MethodProxy;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+
 
 import java.lang.reflect.Method;
 

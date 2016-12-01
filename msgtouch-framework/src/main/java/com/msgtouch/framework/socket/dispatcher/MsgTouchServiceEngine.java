@@ -34,8 +34,8 @@ public class MsgTouchServiceEngine {
 
 
 
-    public MsgTouchMethodDispatcher loadService(){
-        MsgTouchMethodDispatcher  msgTouchMethodDispatcher=new MsgTouchMethodDispatcher();
+    public MsgTouchMethodDispatcher loadService(int threadSize){
+        MsgTouchMethodDispatcher  msgTouchMethodDispatcher=new MsgTouchMethodDispatcher(threadSize);
         String [] beanNames=SpringBeanAccess.getInstances().getApplicationContext().getBeanDefinitionNames();
         for(String beanName:beanNames){
             Object controlClass=SpringBeanAccess.getInstances().getApplicationContext().getBean(beanName);

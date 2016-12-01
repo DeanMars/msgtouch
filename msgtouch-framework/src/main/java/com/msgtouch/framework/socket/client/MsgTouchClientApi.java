@@ -1,6 +1,5 @@
 package com.msgtouch.framework.socket.client;
 
-import com.msgtouch.framework.socket.client.proxy.CglibRpcCallProxyFactory;
 import com.msgtouch.framework.socket.dispatcher.MsgPushedListener;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;

@@ -23,7 +23,7 @@ public class Launch {
 
     public static void main(String []args){
 
-        ApplicationContext applicationContext=SpringApplication.run(Launch.class,args);
+     /*   ApplicationContext applicationContext=SpringApplication.run(Launch.class,args);
         Environment environment=applicationContext.getEnvironment();
         String profileName=environment.getProperty("my.profile.name");
 
@@ -37,7 +37,7 @@ public class Launch {
         String ret=clientService.test();
         logger.info("ret={}",ret);
 
-        logger.info("Launch success !");
+        logger.info("Launch success !");*/
 
     }
 
