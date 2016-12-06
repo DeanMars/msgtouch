@@ -1,13 +1,11 @@
 package com.msgtouch.framework;
 
 
-import com.msgtouch.framework.consul.ConsulEngine;
 import com.msgtouch.framework.context.SpringBeanAccess;
 import com.msgtouch.framework.settings.SettingsBuilder;
-import com.msgtouch.framework.settings.SocketClientSetting;
 import com.msgtouch.framework.settings.SocketServerSetting;
 import com.msgtouch.framework.socket.SocketEngine;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.msgtouch.framework.socket.dispatcher.MsgTouchServiceEngine;
 import com.msgtouch.framework.utils.RemoteUtils;
 import org.springframework.context.ApplicationContext;
@@ -47,7 +45,9 @@ public class Bootstrap {
         //初始化上下文
         initContext(applicationContext);
         SocketServerSetting setting= SettingsBuilder.getSocketServerSetting(applicationContext);
-        MsgTouchMethodDispatcher msgTouchMethodDispatcher= MsgTouchServiceEngine.getInstances().loadService(setting.cmdThreadSize);
+
+        JsonPacketMethodDispatcher msgTouchMethodDispatcher=new JsonPacketMethodDispatcher(setting.cmdThreadSize);
+        MsgTouchServiceEngine.getInstances().loadService(msgTouchMethodDispatcher);
         //consul 服务注册
         //ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
 

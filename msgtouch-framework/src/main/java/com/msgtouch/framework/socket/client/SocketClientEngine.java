@@ -1,7 +1,7 @@
 package com.msgtouch.framework.socket.client;
 
 import com.msgtouch.framework.settings.SocketClientSetting;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.msgtouch.framework.socket.handler.MsgTouchClientInitializer;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
@@ -21,13 +21,13 @@ import org.slf4j.LoggerFactory;
  */
 public class SocketClientEngine {
     private static final Logger log= LoggerFactory.getLogger(SocketClientEngine.class);
-    private MsgTouchMethodDispatcher msgTouchMethodDispatcher;
+    private JsonPacketMethodDispatcher msgTouchMethodDispatcher;
     private SocketClientSetting settings;
     private EventLoopGroup eventExecutors;
     private Channel channel;
     private Bootstrap bootstrap;
 
-    public SocketClientEngine(SocketClientSetting socketClientSetting,MsgTouchMethodDispatcher msgTouchMethodDispatcher) {
+    public SocketClientEngine(SocketClientSetting socketClientSetting,JsonPacketMethodDispatcher msgTouchMethodDispatcher) {
         this.settings=socketClientSetting;
         this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
     }
@@ -75,7 +75,7 @@ public class SocketClientEngine {
         return settings;
     }
 
-    public MsgTouchMethodDispatcher getMsgTouchMethodDispatcher() {
+    public JsonPacketMethodDispatcher getMsgTouchMethodDispatcher() {
         return msgTouchMethodDispatcher;
     }
 }

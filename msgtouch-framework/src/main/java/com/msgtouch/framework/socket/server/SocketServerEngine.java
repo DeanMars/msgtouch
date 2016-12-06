@@ -1,7 +1,7 @@
 package com.msgtouch.framework.socket.server;
 
 import com.msgtouch.framework.settings.SocketServerSetting;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.msgtouch.framework.socket.handler.MsgTouchServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -31,7 +31,7 @@ public class SocketServerEngine {
     /**
      * 启动网络服务
      * */
-    public void bind(MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    public void bind(JsonPacketMethodDispatcher msgTouchMethodDispatcher){
         log.info("SocketServerEngine Init!");
         final EventLoopGroup bossGroup = new NioEventLoopGroup(settings.bossThreadSize);
         final EventLoopGroup workerGroup = new NioEventLoopGroup(settings.workerThreadSize);

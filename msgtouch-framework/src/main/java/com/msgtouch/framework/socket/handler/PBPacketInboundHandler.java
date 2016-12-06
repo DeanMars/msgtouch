@@ -1,8 +1,8 @@
 package com.msgtouch.framework.socket.handler;
 
-import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
+import com.msgtouch.common.proto.MsgPBPacket;
+import com.msgtouch.framework.socket.dispatcher.PBPacketMethodDispatcher;
 import com.msgtouch.framework.socket.dispatcher.SyncRpcCallBack;
-import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
 import com.msgtouch.framework.socket.session.SessionManager;
@@ -17,12 +17,12 @@ import java.util.HashMap;
  * Created by Dean on 2016/9/8.
  */
 
-public class JsonPacketInboundHandler extends SimpleChannelInboundHandler<MsgPacket>{
-    private static Logger logger= LoggerFactory.getLogger(JsonPacketInboundHandler.class);
+public class PBPacketInboundHandler extends SimpleChannelInboundHandler<MsgPBPacket.Packet.Builder>{
+    private static Logger logger= LoggerFactory.getLogger(PBPacketInboundHandler.class);
 
-    private JsonPacketMethodDispatcher msgTouchMethodDispatcher;
+    private PBPacketMethodDispatcher msgTouchMethodDispatcher;
 
-    public JsonPacketInboundHandler(JsonPacketMethodDispatcher msgTouchMethodDispatcher){
+    public PBPacketInboundHandler(PBPacketMethodDispatcher msgTouchMethodDispatcher){
         this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
     }
 
@@ -31,11 +31,11 @@ public class JsonPacketInboundHandler extends SimpleChannelInboundHandler<MsgPac
      * 有客户端数据发送到服务端时会调用此方法，提交给自定义线程池处理业务逻辑。
      * @param  ctx
      * */
-    protected void channelRead0(ChannelHandlerContext ctx, MsgPacket bilingPacket) throws Exception {
-        logger.debug("JsonPacketInboundHandler channelRead0 bilingPacket={}",bilingPacket.toString());
+    protected void channelRead0(ChannelHandlerContext ctx, MsgPBPacket.Packet.Builder packet) throws Exception {
+        logger.debug("JsonPacketInboundHandler channelRead0 bilingPacket={}",packet.toString());
         ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
         if(null!=msgTouchMethodDispatcher) {
-            msgTouchMethodDispatcher.dispatcher(session, bilingPacket);
+            msgTouchMethodDispatcher.dispatcher(session, packet);
         }
     }
 

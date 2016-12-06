@@ -1,23 +1,39 @@
 package com.msgtouch.framework.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.google.protobuf.AbstractMessage;
+import com.google.protobuf.Message;
+import com.msgtouch.framework.socket.packet.MsgBytePacket;
 import com.msgtouch.framework.socket.packet.MsgType;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Dean on 2016/11/25.
  */
 public class CodecUtils {
+    private static Map<String,ProtobufMapper> protobufMapperCache=new HashMap<String,ProtobufMapper>();
+    private static class ProtobufMapper{
+        String builderClassName;
+        String protoClassName;
+    }
 
-    public static Object decode(MsgType msgType, Class clazz, String value){
+    public static <T> T decode(MsgType msgType, Class<T> clazz, MsgBytePacket msgBytePacket) throws Exception{
         switch (msgType) {
             case JSON:
-                return decodeValue(clazz,value);
+                return (T)decodeValue(clazz,msgBytePacket.readString());
+            case ProtoBuf:
+                Method newBuilderMethod=Class.forName(getProtoClassName(clazz)).getMethod("newBuilder");
+                Message.Builder builder=(Message.Builder)newBuilderMethod.invoke(null,null);
+                return (T)msgBytePacket.readProtoBuf(builder);
             default:
                 throw new IllegalArgumentException("Unsupport msgType "+msgType);
         }
     }
 
-    public static String encode(MsgType msgType, Class clazz, Object value){
+    public static String encode(MsgType msgType, Class clazz, Object value) throws Exception{
         switch (msgType) {
             case JSON:
                 return encodeValue(clazz,value);
@@ -26,6 +42,33 @@ public class CodecUtils {
         }
     }
 
+    public static String getProtoClassName(Class clazz){
+        String builderClassName=null;
+        boolean firstProto=true;
+        String protoClassName=null;
+        String className=clazz.getName();
+        if(protobufMapperCache.containsKey(className)){
+            builderClassName= protobufMapperCache.get(className).builderClassName;
+            protoClassName=protobufMapperCache.get(className).protoClassName;
+            firstProto=false;
+        }else{
+            builderClassName=className;
+            if(AbstractMessage.Builder.class.isAssignableFrom(clazz)) {
+                int lastIndex = builderClassName.lastIndexOf("Builder");
+                protoClassName = builderClassName.substring(0, lastIndex-1);
+                firstProto=true;
+            }else{
+                throw new UnsupportedOperationException("Unsupported this protobuf:" + className);
+            }
+        }
+        if(firstProto){
+            ProtobufMapper mapper=new ProtobufMapper();
+            mapper.builderClassName=builderClassName;
+            mapper.protoClassName=protoClassName;
+            protobufMapperCache.put(className, mapper);
+        }
+        return protoClassName;
+    }
 
     private static String encodeValue(Class c,Object value){
         String type=c.getName();

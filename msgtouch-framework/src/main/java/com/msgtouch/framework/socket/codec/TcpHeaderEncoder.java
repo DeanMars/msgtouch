@@ -9,7 +9,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 /**
  * Created by Dean on 2016/9/9.
  */
-public class BilingHeaderEncoder extends MessageToByteEncoder<MsgBytePacket> {
+public class TcpHeaderEncoder extends MessageToByteEncoder<MsgBytePacket> {
     protected void encode(ChannelHandlerContext channelHandlerContext, MsgBytePacket packet, ByteBuf out) throws Exception {
         ByteBuf buf= Unpooled.buffer();
         buf.writeInt(packet.getContent().readableBytes());

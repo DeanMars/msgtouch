@@ -4,7 +4,7 @@ import com.msgtouch.framework.context.Constraint;
 import com.msgtouch.framework.settings.SettingsBuilder;
 import com.msgtouch.framework.settings.ZookeeperSetting;
 import com.msgtouch.framework.socket.SocketEngine;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.msgtouch.framework.zookeeper.watcher.DefaultWatcher;
 import com.msgtouch.framework.zookeeper.watcher.ServiceWatcher;
 import com.msgtouch.framework.zookeeper.watcher.SessionWatcher;
@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Dean on 2016/9/6.
@@ -45,14 +44,14 @@ public class ZooKeeperEngine {
     }
 
 
-    public void bind(MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    public void bind(JsonPacketMethodDispatcher msgTouchMethodDispatcher){
         ZookeeperSetting setting= SettingsBuilder.buildZookeeperSetting();
         logger.info("ZooKeeperEngine bind hosts={},timeout={}", setting.connectString, setting.timeout);
 
 
     }
 
-    public void bind(MsgTouchMethodDispatcher msgTouchMethodDispatcher, ZookeeperSetting setting){
+    public void bind(JsonPacketMethodDispatcher msgTouchMethodDispatcher, ZookeeperSetting setting){
         try {
             zooKeeper=initZooKeeper(setting);
 
@@ -103,7 +102,7 @@ public class ZooKeeperEngine {
         }
     }
 
-    private void regesiteService(MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    private void regesiteService(JsonPacketMethodDispatcher msgTouchMethodDispatcher){
         List<String> serviceList= msgTouchMethodDispatcher.getClusterlist();
         ServiceWatcher serviceWatcher=new ServiceWatcher();
         for(String serviceName:serviceList){

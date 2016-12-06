@@ -1,6 +1,5 @@
 package com.msgtouch.framework.socket.codec;
 
-import com.alibaba.fastjson.JSON;
 import com.msgtouch.framework.socket.packet.MsgType;
 import com.msgtouch.framework.socket.packet.MsgBytePacket;
 import com.msgtouch.framework.socket.packet.MsgPacket;
@@ -18,28 +17,28 @@ import java.util.List;
 /**
  * Created by Dean on 2016/9/8.
  */
-public class BilingMsgDecoder extends MessageToMessageDecoder<MsgBytePacket>{
-    private static Logger logger= LoggerFactory.getLogger(BilingMsgDecoder.class);
+public class RpcMsgDecoder extends MessageToMessageDecoder<MsgBytePacket>{
+    private static Logger logger= LoggerFactory.getLogger(RpcMsgDecoder.class);
 
     protected void decode(ChannelHandlerContext channelHandlerContext, MsgBytePacket msgBytePacket, List list) throws Exception {
-        ByteBuf byteBuf=msgBytePacket.getContent();
-        boolean isCall=byteBuf.readBoolean();
+
+        boolean isCall=msgBytePacket.readBoolean();
         //uuid
-        String uuid=readString(byteBuf);
+        String uuid=msgBytePacket.readString();
         //命令字
-        String cmd=readString(byteBuf);
+        String cmd=msgBytePacket.readString();
         //消息类型
-        MsgType msgType= MsgType.valueOf(byteBuf.readInt());
+        MsgType msgType= MsgType.valueOf(msgBytePacket.readInt());
         //参数列表
-        int paramsLength=byteBuf.readInt();
+        int paramsLength=msgBytePacket.readInt();
         List<Object> params=new ArrayList<Object>(paramsLength);
         for(int i=0;i<paramsLength;i++){
-            boolean isNull=byteBuf.readBoolean();
+            boolean isNull=msgBytePacket.readBoolean();
             if(!isNull){
-                String className=readString(byteBuf);
+                String className=msgBytePacket.readString();
                 Class clazz=Class.forName(className);
-                String value=readString(byteBuf);
-                Object param= CodecUtils.decode(msgType,clazz,value);
+
+                Object param= CodecUtils.decode(msgType,clazz,msgBytePacket);
                 params.add(param);
             }else{
                 params.add(null);
@@ -51,7 +50,7 @@ public class BilingMsgDecoder extends MessageToMessageDecoder<MsgBytePacket>{
         bilingPacket.setMsgType(msgType);
 
 
-        logger.info("BilingMsgDecoder.decode bilingPacket={}",bilingPacket.toString());
+        logger.info("RpcMsgDecoder.decode bilingPacket={}",bilingPacket.toString());
 
         list.add(bilingPacket);
 
@@ -60,12 +59,7 @@ public class BilingMsgDecoder extends MessageToMessageDecoder<MsgBytePacket>{
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-        logger.error("BilingMsgDecoder Exception Caught {}",ctx.channel(),cause);
+        logger.error("RpcMsgDecoder Exception Caught {}",ctx.channel(),cause);
     }
 
-    private String readString(ByteBuf byteBuf) throws UnsupportedEncodingException{
-        int length=byteBuf.readInt();
-        byte[] content=byteBuf.readBytes(length).array();
-        return new String(content,"UTF-8");
-    }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 将ByteBuf封装为BinaryPacket
  */
-public class BilingHeaderDecoder extends ReplayingDecoder<Void> {
+public class TcpHeaderDecoder extends ReplayingDecoder<Void> {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         int length=in.readInt();

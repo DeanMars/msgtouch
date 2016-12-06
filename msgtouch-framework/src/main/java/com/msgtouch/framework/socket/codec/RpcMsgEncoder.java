@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * Created by Dean on 2016/9/8.
  */
-public class BilingMsgEncoder extends MessageToMessageEncoder<MsgPacket> {
-    private static Logger logger= LoggerFactory.getLogger(BilingMsgDecoder.class);
+public class RpcMsgEncoder extends MessageToMessageEncoder<MsgPacket> {
+    private static Logger logger= LoggerFactory.getLogger(RpcMsgDecoder.class);
     private static final SerializerFeature[] FEATURES=new SerializerFeature[]{SerializerFeature.WriteClassName};
     protected void encode(ChannelHandlerContext ctx, MsgPacket msgPacket, List list) throws Exception {
         try{

@@ -9,7 +9,7 @@ import com.msgtouch.framework.cluster.TouchService;
 import com.msgtouch.framework.context.Constraint;
 import com.msgtouch.framework.settings.ConsulSetting;
 import com.msgtouch.framework.settings.SettingsBuilder;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.orbitz.consul.AgentClient;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.HealthClient;
@@ -38,7 +38,7 @@ public class ConsulEngine {
     private static final ConsulEngine consulEngine=new ConsulEngine();
     private  Logger logger= LoggerFactory.getLogger(ConsulEngine.class);
     private  Consul consul=null;
-    private  MsgTouchMethodDispatcher msgTouchMethodDispatcher;
+    private JsonPacketMethodDispatcher msgTouchMethodDispatcher;
     private ConsulSetting setting=null;
     private TouchCluster touchCluster;
     private ConsulEngine(){
@@ -49,7 +49,7 @@ public class ConsulEngine {
         return consulEngine;
     }
 
-    public void bind(ApplicationContext applicationContext,MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    public void bind(ApplicationContext applicationContext,JsonPacketMethodDispatcher msgTouchMethodDispatcher){
         this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
         this.setting = SettingsBuilder.getConsulSetting();
         if(null==consul) {
@@ -115,7 +115,7 @@ public class ConsulEngine {
 
     }
 
-    public void registeProvider(TouchCluster touchCluster,MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    public void registeProvider(TouchCluster touchCluster,JsonPacketMethodDispatcher msgTouchMethodDispatcher){
         KeyValueClient keyValueClient=consul.keyValueClient();
         TouchRoot root=getTouchServiceRoot(keyValueClient);
         for(String serviceClasssName:msgTouchMethodDispatcher.getClusterlist()){
@@ -150,7 +150,7 @@ public class ConsulEngine {
 
     }
 
-    private TouchCluster buildTouchCluster(MsgTouchMethodDispatcher msgTouchMethodDispatcher,ConsulSetting setting){
+    private TouchCluster buildTouchCluster(JsonPacketMethodDispatcher msgTouchMethodDispatcher, ConsulSetting setting){
         TouchCluster touchCluster=new TouchCluster();
         touchCluster.setIp(setting.ipAddress);
         touchCluster.setPort(setting.port);

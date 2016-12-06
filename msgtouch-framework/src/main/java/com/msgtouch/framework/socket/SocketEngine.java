@@ -1,16 +1,13 @@
 package com.msgtouch.framework.socket;
 
-import com.msgtouch.framework.settings.SettingsBuilder;
 import com.msgtouch.framework.settings.SocketServerSetting;
 import com.msgtouch.framework.socket.client.MsgTouchClientApi;
 import com.msgtouch.framework.socket.client.SocketClientEngine;
 import com.msgtouch.framework.settings.SocketClientSetting;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchServiceEngine;
+import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.msgtouch.framework.socket.server.SocketServerEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Created by Dean on 2016/9/5.
@@ -18,7 +15,7 @@ import org.springframework.context.ApplicationContext;
 public class SocketEngine {
     private static Logger logger= LoggerFactory.getLogger(SocketEngine.class);
 
-    public static void startServer( SocketServerSetting setting,MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    public static void startServer( SocketServerSetting setting,JsonPacketMethodDispatcher msgTouchMethodDispatcher){
         //msg service加载
         logger.info("SocketEngine startServer bossThreadSize={},cmdThreadSize={},workerThreadSize={},port={}",
                 setting.bossThreadSize, setting.cmdThreadSize,setting.workerThreadSize,setting.port);
@@ -27,7 +24,7 @@ public class SocketEngine {
 
 
     public static MsgTouchClientApi startClient(SocketClientSetting socketClientSetting)throws Exception{
-        MsgTouchMethodDispatcher msgTouchMethodDispatcher=new MsgTouchMethodDispatcher(socketClientSetting.cmdThreadSize,true);
+        JsonPacketMethodDispatcher msgTouchMethodDispatcher=new JsonPacketMethodDispatcher(socketClientSetting.cmdThreadSize,true);
         SocketClientEngine socketClientEngine=new SocketClientEngine(socketClientSetting,msgTouchMethodDispatcher);
         socketClientEngine.bind();
         return MsgTouchClientApi.getInstance().initComponents(socketClientEngine);
@@ -37,7 +34,7 @@ public class SocketEngine {
     /*public static MsgTouchClientApi startClient()throws Exception{
 
         SocketClientEngine socketClientEngine=new SocketClientEngine(socketClientSetting);
-        MsgTouchMethodDispatcher msgTouchMethodDispatcher=new MsgTouchMethodDispatcher();
+        JsonPacketMethodDispatcher msgTouchMethodDispatcher=new JsonPacketMethodDispatcher();
         socketClientEngine.bind(msgTouchMethodDispatcher);
         return MsgTouchClientApi.getInstance().initComponents(socketClientEngine);
 

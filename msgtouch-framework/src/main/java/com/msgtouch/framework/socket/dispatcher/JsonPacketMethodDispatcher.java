@@ -1,6 +1,5 @@
 package com.msgtouch.framework.socket.dispatcher;
 
-import com.msgtouch.framework.exception.MsgTouchException;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
@@ -8,28 +7,21 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Dean on 2016/9/8.
  */
-public class MsgTouchMethodDispatcher extends MethodDispatcher<MsgPacket>{
-    private static Logger logger= LoggerFactory.getLogger(MsgTouchMethodDispatcher.class);
+public class JsonPacketMethodDispatcher extends MethodDispatcher<MsgPacket>{
+    private static Logger logger= LoggerFactory.getLogger(JsonPacketMethodDispatcher.class);
 
     private Map<String,List<MsgPushedListener>> pushedListenerMap=new HashMap<String,List<MsgPushedListener>>();
-    private List<String> clusterList=new ArrayList<String>();
     private boolean handlerPush;
-    public MsgTouchMethodDispatcher(int threadSize){
+    public JsonPacketMethodDispatcher(int threadSize){
         this.handlerPush=false;
         initPool(threadSize);
     }
-    public MsgTouchMethodDispatcher(int threadSize,boolean handlerPush){
+    public JsonPacketMethodDispatcher(int threadSize, boolean handlerPush){
         this.handlerPush=handlerPush;
         initPool(threadSize);
     }
@@ -46,7 +38,7 @@ public class MsgTouchMethodDispatcher extends MethodDispatcher<MsgPacket>{
                             handlerPush(session,msgPacket);
                             return;
                         }else{
-                            throw new RuntimeException("MsgTouchMethodDispatcher method cmd="+cmd+" not found!");
+                            throw new RuntimeException("JsonPacketMethodDispatcher method cmd="+cmd+" not found!");
                         }
                     }
                     Object[] params = msgPacket.getParams();
@@ -62,7 +54,7 @@ public class MsgTouchMethodDispatcher extends MethodDispatcher<MsgPacket>{
                                 logger.error("channel is not active:packet = {}",msgPacket);
                             }
                         } catch (Exception e) {
-                            logger.info("MsgTouchMethodDispatcher invoke method exception ！！");
+                            logger.info("JsonPacketMethodDispatcher invoke method exception ！！");
                             e.printStackTrace();
                         }
 
@@ -113,15 +105,6 @@ public class MsgTouchMethodDispatcher extends MethodDispatcher<MsgPacket>{
         return methodInvokerMap.keySet();
     }
 
-    public void addCluster(String cluster){
-        if(!clusterList.contains(cluster)){
-            clusterList.add(cluster);
-        }
-    }
-
-    public List<String> getClusterlist() {
-        return clusterList;
-    }
 
     public void addPushedListener(MsgPushedListener msgPushedListener){
         if(null!=msgPushedListener){
