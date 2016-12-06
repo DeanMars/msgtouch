@@ -1,6 +1,6 @@
 package com.msgtouch.framework.socket.handler;
 
-import com.msgtouch.framework.socket.dispatcher.MsgTouchMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.msgtouch.framework.socket.dispatcher.SyncRpcCallBack;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
@@ -20,9 +20,9 @@ import java.util.HashMap;
 public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPacket>{
     private static Logger logger= LoggerFactory.getLogger(MsgTouchInboundHandler.class);
 
-    private MsgTouchMethodDispatcher msgTouchMethodDispatcher;
+    private JsonPacketMethodDispatcher msgTouchMethodDispatcher;
 
-    public MsgTouchInboundHandler(MsgTouchMethodDispatcher msgTouchMethodDispatcher){
+    public MsgTouchInboundHandler(JsonPacketMethodDispatcher msgTouchMethodDispatcher){
         this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
     }
 

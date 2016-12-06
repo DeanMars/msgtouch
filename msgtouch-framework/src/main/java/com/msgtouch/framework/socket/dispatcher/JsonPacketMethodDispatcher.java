@@ -19,10 +19,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Dean on 2016/9/8.
  */
-public class MsgTouchMethodDispatcher {
+public class MsgTouchMethodDispatcher extends MethodDispatcher<MsgPacket>{
     private static Logger logger= LoggerFactory.getLogger(MsgTouchMethodDispatcher.class);
 
-    private Map<String,MsgTouchMethodInvoker> methodInvokerMap =new HashMap<String,MsgTouchMethodInvoker>();
     private Map<String,List<MsgPushedListener>> pushedListenerMap=new HashMap<String,List<MsgPushedListener>>();
     private List<String> clusterList=new ArrayList<String>();
     private boolean handlerPush;
@@ -33,33 +32,6 @@ public class MsgTouchMethodDispatcher {
     public MsgTouchMethodDispatcher(int threadSize,boolean handlerPush){
         this.handlerPush=handlerPush;
         initPool(threadSize);
-    }
-    private ExecutorService pool=null;
-
-    private void initPool(int threadSize){
-        if(null==pool){
-            pool=Executors.newFixedThreadPool(threadSize, new ThreadFactory() {
-                private AtomicInteger size = new AtomicInteger();
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread thread = new Thread(r);
-                    thread.setName("Rpc-Dispatcher-" + size.incrementAndGet());
-                    if (thread.isDaemon()) {
-                        thread.setDaemon(false);
-                    }
-                    return thread;
-                }
-            });
-        }
-    }
-
-
-    public void addMethod(String cmd,MsgTouchMethodInvoker invoker){
-        if(methodInvokerMap.containsKey(cmd)){
-            logger.error("RpcService method has exists:cmd={}",cmd);
-            throw new MsgTouchException("RpcService method "+cmd+"has exists");
-        }
-        methodInvokerMap.put(cmd, invoker);
     }
 
     public void dispatcher(final ISession session, final MsgPacket msgPacket){
@@ -163,18 +135,6 @@ public class MsgTouchMethodDispatcher {
         }
     }
 
-    private String getParameterizedTypeName(MsgPushedListener msgPushedListener){
-        String result=null;
-        Type[] types = msgPushedListener.getClass().getGenericInterfaces();
-        for(Type t:types){
-            if(t instanceof ParameterizedType) {
-                Type[] temp = ((ParameterizedType) t).getActualTypeArguments();
-                for(Type type:temp){
-                    result=((Class)type).getName();
-                }
-            }
-        }
-        return result;
-    }
+
 
 }
