@@ -1,7 +1,9 @@
 package com.msgtouch.framework.socket.server;
 
 import com.msgtouch.framework.settings.SocketServerSetting;
-import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
+import com.msgtouch.framework.socket.codec.MsgDecoder;
+import com.msgtouch.framework.socket.codec.MsgEncoder;
+import com.msgtouch.framework.socket.dispatcher.MethodDispatcher;
 import com.msgtouch.framework.socket.handler.MsgTouchServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -21,22 +23,23 @@ import java.util.Properties;
 public class SocketServerEngine {
     private Logger log= LoggerFactory.getLogger(SocketServerEngine.class);
     private static Properties properties;
-
+    private MethodDispatcher msgTouchMethodDispatcher;
     private SocketServerSetting settings;
-    public SocketServerEngine(SocketServerSetting socketServerSetting) {
+    public SocketServerEngine(SocketServerSetting socketServerSetting,MethodDispatcher msgTouchMethodDispatcher) {
         this.settings=socketServerSetting;
+        this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
     }
 
 
     /**
      * 启动网络服务
      * */
-    public void bind(JsonPacketMethodDispatcher msgTouchMethodDispatcher){
+    public void bind(MsgDecoder msgTouchDecoder, MsgEncoder msgTouchEncoder){
         log.info("SocketServerEngine Init!");
         final EventLoopGroup bossGroup = new NioEventLoopGroup(settings.bossThreadSize);
         final EventLoopGroup workerGroup = new NioEventLoopGroup(settings.workerThreadSize);
         try {
-            ChannelInitializer<SocketChannel> initializer=new MsgTouchServerInitializer(msgTouchMethodDispatcher);
+            ChannelInitializer<SocketChannel> initializer=new MsgTouchServerInitializer(msgTouchMethodDispatcher,msgTouchDecoder,msgTouchEncoder);
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
@@ -59,6 +62,8 @@ public class SocketServerEngine {
         }
         log.info("SocketServerEngine Start OK!");
     }
+
+
 
 
 }

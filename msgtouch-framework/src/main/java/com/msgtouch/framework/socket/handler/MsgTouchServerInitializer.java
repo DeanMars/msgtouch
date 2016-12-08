@@ -5,11 +5,8 @@
 package com.msgtouch.framework.socket.handler;
 
 
-import com.msgtouch.framework.socket.codec.TcpHeaderDecoder;
-import com.msgtouch.framework.socket.codec.TcpHeaderEncoder;
-import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
-import com.msgtouch.framework.socket.codec.RpcMsgDecoder;
-import com.msgtouch.framework.socket.codec.RpcMsgEncoder;
+import com.msgtouch.framework.socket.codec.*;
+import com.msgtouch.framework.socket.dispatcher.MethodDispatcher;
 import com.msgtouch.framework.utils.EngineParams;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInitializer;
@@ -19,11 +16,15 @@ import io.netty.handler.logging.LoggingHandler;
 
 @Sharable
 public class MsgTouchServerInitializer extends ChannelInitializer<SocketChannel>{
+	private MsgDecoder msgTouchDecoder;
+	private MsgEncoder msgTouchEncoder;
+	private MethodDispatcher msgTouchMethodDispatcher;
 
-	private JsonPacketMethodDispatcher msgTouchMethodDispatcher;
-
-	public MsgTouchServerInitializer(JsonPacketMethodDispatcher msgTouchMethodDispatcher) {
+	public MsgTouchServerInitializer(MethodDispatcher msgTouchMethodDispatcher,
+									 MsgDecoder msgTouchDecoder, MsgEncoder msgTouchEncoder) {
 		this.msgTouchMethodDispatcher = msgTouchMethodDispatcher;
+		this.msgTouchDecoder=msgTouchDecoder;
+		this.msgTouchEncoder=msgTouchEncoder;
 	}
 
 	@Override
@@ -33,12 +34,12 @@ public class MsgTouchServerInitializer extends ChannelInitializer<SocketChannel>
 		}
 
 		ch.pipeline().addLast(new TcpHeaderDecoder());
-		ch.pipeline().addLast(new RpcMsgDecoder());
+		ch.pipeline().addLast(msgTouchDecoder);
 		ch.pipeline().addLast(new TcpHeaderEncoder());
-		ch.pipeline().addLast(new RpcMsgEncoder());
+		ch.pipeline().addLast(msgTouchEncoder);
 
 
-		ch.pipeline().addLast(new JsonPacketInboundHandler(msgTouchMethodDispatcher));
+		ch.pipeline().addLast(new MsgTouchInboundHandler(msgTouchMethodDispatcher));
 
 
 	}

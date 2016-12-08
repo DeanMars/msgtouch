@@ -1,6 +1,6 @@
 package com.msgtouch.framework.socket.client;
 
-import com.msgtouch.framework.socket.dispatcher.MsgPushedListener;
+import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import org.slf4j.Logger;
@@ -41,6 +41,15 @@ public class MsgTouchClientApi {
         MsgPacket packet=new MsgPacket(cmd,params);
         long before= System.currentTimeMillis();
         T result=getSession().syncRpcSend(packet, resultType, (long) syncCallTimeout, TimeUnit.SECONDS);
+        long after=System.currentTimeMillis();
+        logger.info("Rpc sync call:cmd ={},responseTime = {}",cmd,after-before);
+        return result;
+    }
+
+    public MsgPBPacket.Packet.Builder syncRpcCall(String clusterName, String cmd, MsgPBPacket.Packet.Builder builder) throws Exception{
+        long before= System.currentTimeMillis();
+        builder.setCmd(clusterName+"/"+cmd);
+        MsgPBPacket.Packet.Builder result=getSession().syncRpcSend(builder, (long) syncCallTimeout, TimeUnit.SECONDS);
         long after=System.currentTimeMillis();
         logger.info("Rpc sync call:cmd ={},responseTime = {}",cmd,after-before);
         return result;

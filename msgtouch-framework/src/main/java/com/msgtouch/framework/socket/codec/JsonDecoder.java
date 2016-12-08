@@ -4,21 +4,18 @@ import com.msgtouch.framework.socket.packet.MsgType;
 import com.msgtouch.framework.socket.packet.MsgBytePacket;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.utils.CodecUtils;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Dean on 2016/9/8.
  */
-public class RpcMsgDecoder extends MessageToMessageDecoder<MsgBytePacket>{
-    private static Logger logger= LoggerFactory.getLogger(RpcMsgDecoder.class);
+public class JsonDecoder extends MsgDecoder<MsgBytePacket> {
+    private static Logger logger= LoggerFactory.getLogger(JsonDecoder.class);
 
     protected void decode(ChannelHandlerContext channelHandlerContext, MsgBytePacket msgBytePacket, List list) throws Exception {
 
@@ -50,16 +47,10 @@ public class RpcMsgDecoder extends MessageToMessageDecoder<MsgBytePacket>{
         bilingPacket.setMsgType(msgType);
 
 
-        logger.info("RpcMsgDecoder.decode bilingPacket={}",bilingPacket.toString());
+        logger.info("JsonDecoder.decode bilingPacket={}",bilingPacket.toString());
 
         list.add(bilingPacket);
 
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-        logger.error("RpcMsgDecoder Exception Caught {}",ctx.channel(),cause);
     }
 
 }

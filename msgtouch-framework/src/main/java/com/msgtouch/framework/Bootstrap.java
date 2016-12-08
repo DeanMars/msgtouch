@@ -7,6 +7,7 @@ import com.msgtouch.framework.settings.SocketServerSetting;
 import com.msgtouch.framework.socket.SocketEngine;
 import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
 import com.msgtouch.framework.socket.dispatcher.MsgTouchServiceEngine;
+import com.msgtouch.framework.socket.dispatcher.PBPacketMethodDispatcher;
 import com.msgtouch.framework.utils.RemoteUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -41,7 +42,22 @@ public class Bootstrap {
     }
 
 
-    public synchronized void startServerSocket(ApplicationContext applicationContext){
+    public synchronized void startPBServerSocket(ApplicationContext applicationContext){
+        //初始化上下文
+        initContext(applicationContext);
+        SocketServerSetting setting= SettingsBuilder.getSocketServerSetting(applicationContext);
+        PBPacketMethodDispatcher msgTouchMethodDispatcher=new PBPacketMethodDispatcher(setting.cmdThreadSize);
+        MsgTouchServiceEngine.getInstances().loadService(msgTouchMethodDispatcher);
+        //consul 服务注册
+        //ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
+        //连接注册中心
+        //ZooKeeperEngine.getInstances().start(applicationContext);
+        //启动netty toucher
+        SocketEngine.startPBPacketServer(setting,msgTouchMethodDispatcher);
+
+    }
+
+    public synchronized void startJsonServerSocket(ApplicationContext applicationContext){
         //初始化上下文
         initContext(applicationContext);
         SocketServerSetting setting= SettingsBuilder.getSocketServerSetting(applicationContext);
@@ -55,7 +71,7 @@ public class Bootstrap {
         //连接注册中心
         //ZooKeeperEngine.getInstances().start(applicationContext);
         //启动netty toucher
-        SocketEngine.startServer(setting,msgTouchMethodDispatcher);
+        SocketEngine.startJsonPacketServer(setting,msgTouchMethodDispatcher);
 
     }
 

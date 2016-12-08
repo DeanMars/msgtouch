@@ -1,16 +1,16 @@
 package com.msgtouch.framework.socket.dispatcher;
 
 import com.msgtouch.framework.exception.MsgTouchException;
+import com.msgtouch.framework.socket.client.AbstractPBMsgPushedListener;
+import com.msgtouch.framework.socket.client.MsgPushedListener;
+import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -23,7 +23,10 @@ public abstract class MethodDispatcher<T> {
     private static Logger logger= LoggerFactory.getLogger(MethodDispatcher.class);
     protected Map<String,MsgTouchMethodInvoker> methodInvokerMap =new HashMap<String,MsgTouchMethodInvoker>();
     protected ExecutorService pool=null;
-    private List<String> clusterList=new ArrayList<String>();
+    protected List<String> clusterList=new ArrayList<String>();
+    protected Map<String,List<MsgPushedListener>> pushedListenerMap=new HashMap<String,List<MsgPushedListener>>();
+    protected boolean handlerPush;
+
     protected void initPool(int threadSize){
         if(null==pool){
             pool=Executors.newFixedThreadPool(threadSize, new ThreadFactory() {
@@ -55,17 +58,29 @@ public abstract class MethodDispatcher<T> {
 
     protected String getParameterizedTypeName(MsgPushedListener msgPushedListener){
         String result=null;
+        if(msgPushedListener instanceof AbstractPBMsgPushedListener){
+            return MsgPBPacket.Packet.Builder.class.getName();
+        }
         Type[] types = msgPushedListener.getClass().getGenericInterfaces();
-        for(Type t:types){
-            if(t instanceof ParameterizedType) {
-                Type[] temp = ((ParameterizedType) t).getActualTypeArguments();
-                for(Type type:temp){
-                    result=((Class)type).getName();
-                }
+        if(null!=types) {
+            for (Type t : types) {
+                result = getParameterizedTypeName(t);
             }
         }
         return result;
     }
+
+    private String getParameterizedTypeName(Type t){
+        String result=null;
+        if(t instanceof ParameterizedType) {
+            Type[] temp = ((ParameterizedType) t).getActualTypeArguments();
+            for(Type type:temp){
+                result=((Class)type).getName();
+            }
+        }
+        return result;
+    }
+
 
     public void addCluster(String cluster){
         if(!clusterList.contains(cluster)){
@@ -73,7 +88,25 @@ public abstract class MethodDispatcher<T> {
         }
     }
 
+
+
+    public void addPushedListener(MsgPushedListener msgPushedListener){
+        if(null!=msgPushedListener){
+            String name=getParameterizedTypeName(msgPushedListener);
+            List<MsgPushedListener> list=pushedListenerMap.get(name);
+            if(list==null){
+                list=new ArrayList<MsgPushedListener>();
+            }
+            list.add(msgPushedListener);
+            pushedListenerMap.put(name,list);
+        }
+    }
+
     public List<String> getClusterlist() {
         return clusterList;
+    }
+
+    public Set<String> getCmds(){
+        return methodInvokerMap.keySet();
     }
 }

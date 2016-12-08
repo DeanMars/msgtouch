@@ -1,11 +1,10 @@
 package com.msgtouch.framework.socket.codec;
 
-import com.msgtouch.common.proto.MsgPBPacket;
 import com.msgtouch.framework.socket.packet.MsgBytePacket;
+import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +13,8 @@ import java.util.List;
 /**
  * Created by Dean on 2016/9/8.
  */
-public class PBEncoder extends MessageToMessageEncoder<MsgPBPacket.Packet.Builder> {
-    private static Logger logger= LoggerFactory.getLogger(RpcMsgDecoder.class);
+public class PBEncoder extends MsgEncoder<MsgPBPacket.Packet.Builder> {
+    private static Logger logger= LoggerFactory.getLogger(JsonDecoder.class);
     protected void encode(ChannelHandlerContext ctx, MsgPBPacket.Packet.Builder builder, List list) throws Exception {
         try{
             ByteBuf buf= Unpooled.buffer();
@@ -31,10 +30,4 @@ public class PBEncoder extends MessageToMessageEncoder<MsgPBPacket.Packet.Builde
         }
     }
 
-    public void writeString(String s,ByteBuf buf) throws Exception {
-        byte[] arr=s.getBytes("UTF-8");
-        int length=arr.length;
-        buf.writeInt(length);
-        buf.writeBytes(arr);
-    }
 }

@@ -1,0 +1,12 @@
+package com.msgtouch.common.proto;
+option java_package="com.msgtouch.common.proto";
+
+message MsgTestRequest {
+    optional  string msg= 1;
+}
+
+message MsgTestResponse {
+    optional  string msg= 1;
+}
+
+

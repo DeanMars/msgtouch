@@ -1,5 +1,6 @@
 package com.msgtouch.framework.socket.dispatcher;
 
+import com.msgtouch.framework.socket.client.MsgPushedListener;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
@@ -15,8 +16,6 @@ import java.util.*;
 public class JsonPacketMethodDispatcher extends MethodDispatcher<MsgPacket>{
     private static Logger logger= LoggerFactory.getLogger(JsonPacketMethodDispatcher.class);
 
-    private Map<String,List<MsgPushedListener>> pushedListenerMap=new HashMap<String,List<MsgPushedListener>>();
-    private boolean handlerPush;
     public JsonPacketMethodDispatcher(int threadSize){
         this.handlerPush=false;
         initPool(threadSize);
@@ -98,24 +97,6 @@ public class JsonPacketMethodDispatcher extends MethodDispatcher<MsgPacket>{
             }
         }
 
-    }
-
-
-    public Set<String> getCmds(){
-        return methodInvokerMap.keySet();
-    }
-
-
-    public void addPushedListener(MsgPushedListener msgPushedListener){
-        if(null!=msgPushedListener){
-            String name=getParameterizedTypeName(msgPushedListener);
-            List<MsgPushedListener> list=pushedListenerMap.get(name);
-            if(list==null){
-                list=new ArrayList<MsgPushedListener>();
-            }
-            list.add(msgPushedListener);
-            pushedListenerMap.put(name,list);
-        }
     }
 
 

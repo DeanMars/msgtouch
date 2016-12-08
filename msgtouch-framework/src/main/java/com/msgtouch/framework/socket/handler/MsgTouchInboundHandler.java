@@ -1,8 +1,8 @@
 package com.msgtouch.framework.socket.handler;
 
-import com.msgtouch.common.proto.MsgPBPacket;
-import com.msgtouch.framework.socket.dispatcher.PBPacketMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.MethodDispatcher;
 import com.msgtouch.framework.socket.dispatcher.SyncRpcCallBack;
+import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
 import com.msgtouch.framework.socket.session.SessionManager;
@@ -17,12 +17,12 @@ import java.util.HashMap;
  * Created by Dean on 2016/9/8.
  */
 
-public class PBPacketInboundHandler extends SimpleChannelInboundHandler<MsgPBPacket.Packet.Builder>{
-    private static Logger logger= LoggerFactory.getLogger(PBPacketInboundHandler.class);
+public class MsgTouchInboundHandler extends SimpleChannelInboundHandler<MsgPBPacket.Packet.Builder>{
+    private static Logger logger= LoggerFactory.getLogger(MsgTouchInboundHandler.class);
 
-    private PBPacketMethodDispatcher msgTouchMethodDispatcher;
+    private MethodDispatcher msgTouchMethodDispatcher;
 
-    public PBPacketInboundHandler(PBPacketMethodDispatcher msgTouchMethodDispatcher){
+    public MsgTouchInboundHandler(MethodDispatcher msgTouchMethodDispatcher){
         this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
     }
 
@@ -48,7 +48,7 @@ public class PBPacketInboundHandler extends SimpleChannelInboundHandler<MsgPBPac
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
         SessionManager.getInstance().removeSession(session);
-        logger.debug("Channel inActive:{}",ctx.channel());
+        logger.info("Channel inActive:{}",ctx.channel());
 
     }
 
@@ -59,7 +59,7 @@ public class PBPacketInboundHandler extends SimpleChannelInboundHandler<MsgPBPac
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
         ISession session=ctx.channel().attr(Session.SESSION_KEY).get();
         SessionManager.getInstance().addAnonymousSession(session);
-        logger.debug("ChannelActive:{}",ctx.channel().toString());
+        logger.info("ChannelActive:{}",ctx.channel().toString());
     }
     /**
      * 出现异常时

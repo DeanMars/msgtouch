@@ -1,6 +1,7 @@
 package com.msgtouch.toucher.service;
 
 import com.msgtouch.common.vo.TestVo;
+import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.SessionManager;
 import org.slf4j.Logger;
@@ -26,8 +27,33 @@ public class PushServiceImpl {
 
         for(ISession session:list){
             try {
-                TestVo ret= session.pushMsg( testVo, 10);
+                TestVo ret= session.pushJsonMsg( testVo, 10);
                 logger.info("pushAll ret testVo Request={},Response={}",ret.getRequest(),ret.getResponse());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void pushPBAll(String msg){
+        Collection<ISession> list=SessionManager.getInstance().getAllSession();
+
+        TestVo testVo=new TestVo();
+        testVo.setRequest(msg);
+
+        MsgPBPacket.Packet.Builder packet=MsgPBPacket.Packet.newBuilder();
+        packet.setCmd("#msgPushed");
+
+
+        for(ISession session:list){
+            try {
+                MsgPBPacket.Packet.Builder ret= session.pushPBMsg(packet, 10);
+                logger.info("pushAll ret testVo Request={},Response={}",ret.getUid(),ret.getCustomerId());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

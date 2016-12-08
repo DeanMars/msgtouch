@@ -7,7 +7,6 @@ import com.msgtouch.framework.utils.CodecUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +15,8 @@ import java.util.List;
 /**
  * Created by Dean on 2016/9/8.
  */
-public class RpcMsgEncoder extends MessageToMessageEncoder<MsgPacket> {
-    private static Logger logger= LoggerFactory.getLogger(RpcMsgDecoder.class);
+public class JsonEncoder extends MsgEncoder<MsgPacket> {
+    private static Logger logger= LoggerFactory.getLogger(JsonDecoder.class);
     private static final SerializerFeature[] FEATURES=new SerializerFeature[]{SerializerFeature.WriteClassName};
     protected void encode(ChannelHandlerContext ctx, MsgPacket msgPacket, List list) throws Exception {
         try{
@@ -48,10 +47,4 @@ public class RpcMsgEncoder extends MessageToMessageEncoder<MsgPacket> {
         }
     }
 
-    public void writeString(String s,ByteBuf buf) throws Exception {
-        byte[] arr=s.getBytes("UTF-8");
-        int length=arr.length;
-        buf.writeInt(length);
-        buf.writeBytes(arr);
-    }
 }

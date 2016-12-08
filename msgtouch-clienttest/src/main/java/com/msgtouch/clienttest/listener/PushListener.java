@@ -1,7 +1,7 @@
 package com.msgtouch.clienttest.listener;
 
 import com.msgtouch.common.vo.TestVo;
-import com.msgtouch.framework.socket.dispatcher.MsgPushedListener;
+import com.msgtouch.framework.socket.client.MsgPushedListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

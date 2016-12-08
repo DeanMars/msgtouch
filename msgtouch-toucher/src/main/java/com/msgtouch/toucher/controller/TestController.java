@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     @Autowired
     private PushServiceImpl pushServiceImpl;
+
     @RequestMapping("pushAll")
     public String  pushAll(@RequestParam("msg")String msg){
-        pushServiceImpl.pushAll(msg);
+        pushServiceImpl.pushPBAll(msg);
         return "";
     }
 

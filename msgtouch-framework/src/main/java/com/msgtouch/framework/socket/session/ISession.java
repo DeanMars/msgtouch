@@ -4,6 +4,7 @@
  * */
 package com.msgtouch.framework.socket.session;
 
+import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
@@ -90,5 +91,9 @@ public interface ISession {
 	 * */
 	<T> T syncRpcSend(MsgPacket packet, Class<T> resultType, long timeout, TimeUnit unit)throws InterruptedException,ExecutionException, TimeoutException;
 
-	public <T> T pushMsg(T t, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException ;
+	MsgPBPacket.Packet.Builder syncRpcSend(MsgPBPacket.Packet.Builder packet, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
+
+	<T> T pushJsonMsg(T t, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException ;
+
+	MsgPBPacket.Packet.Builder pushPBMsg(MsgPBPacket.Packet.Builder packet, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException ;
 }

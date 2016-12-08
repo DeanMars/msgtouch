@@ -1,6 +1,7 @@
 package com.msgtouch.framework.socket.session;
 
 import com.msgtouch.framework.socket.dispatcher.SyncRpcCallBack;
+import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -101,6 +102,20 @@ public class Session implements ISession{
 			return channel.newSucceededFuture();
 		}
 	}
+
+	public Future<?> writeAndFlush(MsgPBPacket.Packet.Builder packet) {
+		if(packet==null){
+			throw new NullPointerException("MsgPacket.params can not be null");
+		}
+		if(channel.isActive()){
+			final ChannelFuture future=channel.writeAndFlush(packet);
+			setLastActiveTime(System.currentTimeMillis());
+			return future;
+		}else{
+			logger.error("Session is not active:packet = {}",packet.toString());
+			return channel.newSucceededFuture();
+		}
+	}
 	@Override
 	public boolean containsAttribute(AttributeKey<?> key) {
 		// TODO Auto-generated method stub
@@ -171,7 +186,26 @@ public class Session implements ISession{
 		}
 	}
 
-	public <T> T pushMsg(T t, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException {
+
+	public MsgPBPacket.Packet.Builder syncRpcSend(MsgPBPacket.Packet.Builder packet, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+		packet.setSeq(UUID.randomUUID().toString());
+		packet.setMsgType(MsgPBPacket.MsgType.Request);
+		String uuid=packet.getSeq();
+		try {
+			DefaultProgressivePromise<MsgPBPacket.Packet.Builder> syncPromise=new DefaultProgressivePromise<MsgPBPacket.Packet.Builder>(channel.eventLoop());
+			SyncRpcCallBack callBack=new SyncRpcCallBack(syncPromise);
+			Map<String,SyncRpcCallBack<?>> callBackMap=getAttribute(SYNC_CALLBACK_MAP);
+			callBackMap.put(uuid, callBack);
+			writeAndFlush(packet);
+			MsgPBPacket.Packet.Builder result=syncPromise.get(timeout, TimeUnit.SECONDS);
+			callBackMap.remove(uuid);
+			return result;
+		}finally {
+			getAttribute(SYNC_CALLBACK_MAP).remove(uuid);
+		}
+	}
+
+	public <T> T pushJsonMsg(T t, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException {
 		MsgPacket packet=new MsgPacket("",new Object[]{t});
 		packet.setUuid(UUID.randomUUID().toString());
 		packet.setCall(true);
@@ -183,6 +217,26 @@ public class Session implements ISession{
 			callBackMap.put(uuid, callBack);
 			writeAndFlush(packet);
 			T result=syncPromise.get(timeoutSecond, TimeUnit.SECONDS);
+			callBackMap.remove(uuid);
+			return result;
+		}finally {
+			getAttribute(SYNC_CALLBACK_MAP).remove(uuid);
+		}
+	}
+
+	@Override
+	public MsgPBPacket.Packet.Builder  pushPBMsg(MsgPBPacket.Packet.Builder packet, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException {
+		packet.setSeq(UUID.randomUUID().toString());
+		packet.setMsgType(MsgPBPacket.MsgType.Request);
+		packet.setRetCode(MsgPBPacket.RetCode.PUSH);
+		String uuid=packet.getSeq();
+		try {
+			DefaultProgressivePromise<MsgPBPacket.Packet.Builder> syncPromise=new DefaultProgressivePromise<MsgPBPacket.Packet.Builder>(channel.eventLoop());
+			SyncRpcCallBack callBack=new SyncRpcCallBack(syncPromise);
+			Map<String,SyncRpcCallBack<?>> callBackMap=getAttribute(SYNC_CALLBACK_MAP);
+			callBackMap.put(uuid, callBack);
+			writeAndFlush(packet);
+			MsgPBPacket.Packet.Builder  result=syncPromise.get(timeoutSecond, TimeUnit.SECONDS);
 			callBackMap.remove(uuid);
 			return result;
 		}finally {
