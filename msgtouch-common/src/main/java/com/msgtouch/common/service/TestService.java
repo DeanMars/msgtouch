@@ -8,7 +8,7 @@ import com.msgtouch.framework.annotation.MsgService;
  * Created by Dean on 2016/10/12.
  */
 @MsgService(Constraint.MSGTOUCH_TOUCHER)
-public interface LoginService {
+public interface TestService {
     @MsgMethod("login")
     String login(String dtr);
 

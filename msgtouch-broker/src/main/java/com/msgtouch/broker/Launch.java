@@ -1,6 +1,6 @@
 package com.msgtouch.broker;
 
-import com.msgtouch.common.service.LoginService;
+import com.msgtouch.common.service.TestService;
 import com.msgtouch.framework.utils.RemoteUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class Launch {
                 logger.info("beanNames ={} !",beanName);
             }
         }
-        LoginService testService=applicationContext.getBean(LoginService.class);
+        TestService testService=applicationContext.getBean(TestService.class);
 
        // String ret= testService.test();
 

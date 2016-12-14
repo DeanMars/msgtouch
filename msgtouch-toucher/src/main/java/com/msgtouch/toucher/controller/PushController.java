@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by Dean on 2016/11/21.
  */
 @RestController
-public class TestController {
+public class PushController {
     @Autowired
     private PushServiceImpl pushServiceImpl;
 

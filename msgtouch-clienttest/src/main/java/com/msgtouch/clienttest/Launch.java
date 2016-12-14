@@ -40,7 +40,7 @@ public class Launch {
     private static void startJsonClient() throws Exception{
         SocketClientSetting socketClientSetting=getSocketClientSetting();
         MsgTouchClientApi msgTouchClientApi=SocketEngine.startJsonPacketClient(socketClientSetting);
-        //LoginService loginService=msgTouchClientApi.getRpcCallProxy(true, LoginService.class);
+        //TestService loginService=msgTouchClientApi.getRpcCallProxy(true, TestService.class);
         // logger.info(loginService.login("32432423423"));
         // logger.info(loginService.test(true,"1",'2',(byte)1,(short)2,3,4.0f,5.0,6L));
         //msgTouchClientApi.addPushedListener(new PushListener());

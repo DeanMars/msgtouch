@@ -11,6 +11,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -53,19 +54,33 @@ public class PBPacketMethodDispatcher extends MethodDispatcher<MsgPBPacket.Packe
                         if (null == msgTouchMethodInvoker) {
                             throw new RuntimeException("PBPacketMethodDispatcher method cmd=" + cmd + " not found!");
                         }
-                        Object[] params = new Object[]{builder};
-                        try {
-                            MsgPBPacket.Packet.Builder ret = (MsgPBPacket.Packet.Builder) msgTouchMethodInvoker.invoke(params);
-                            ret.setMsgType(MsgPBPacket.MsgType.Response);
-                            Channel channel = session.getChannel();
-                            if (channel.isActive()) {
-                                channel.writeAndFlush(ret);
-                            } else {
-                                logger.error("channel is not active:packet = {}", builder.build().toString());
+                        Method method=msgTouchMethodInvoker.getMethod();
+                        Class []types=method.getParameterTypes();
+                        List<Object> list=new ArrayList<Object>();
+                        for(Class clazz:types){
+                            if((clazz.isInterface()&&clazz.getName().equals(ISession.class.getName()))
+                                    ||(!clazz.isInterface()&&clazz.getName().equals(Session.class.getName()))){
+                                list.add(session);
+                            }else{
+                                list.add(builder);
                             }
+                        }
+                        Object[] params = list.toArray();
+                        MsgPBPacket.Packet.Builder ret=builder;
+                        try {
+                            ret = (MsgPBPacket.Packet.Builder) msgTouchMethodInvoker.invoke(params);
                         } catch (Exception e) {
-                            logger.info("PBPacketMethodDispatcher invoke method exception ！！");
+                            logger.error("PBPacketMethodDispatcher invoke method exception ！！");
                             e.printStackTrace();
+                            ret.setError(e.getMessage());
+                            ret.setRetCode(MsgPBPacket.RetCode.EXCEPTION);
+                        }
+                        ret.setMsgType(MsgPBPacket.MsgType.Response);
+                        Channel channel = session.getChannel();
+                        if (channel.isActive()) {
+                            channel.writeAndFlush(ret);
+                        } else {
+                            logger.error("channel is not active:packet = {}", builder.build().toString());
                         }
                     } else {
                         SyncRpcCallBack callBack = session.getAttribute(Session.SYNC_CALLBACK_MAP).get(builder.getSeq());

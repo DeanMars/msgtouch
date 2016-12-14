@@ -1,5 +1,6 @@
 package com.msgtouch.toucher.service;
 
+import com.msgtouch.common.proto.MsgTest;
 import com.msgtouch.common.vo.TestVo;
 import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.session.ISession;
@@ -47,6 +48,9 @@ public class PushServiceImpl {
         testVo.setRequest(msg);
 
         MsgPBPacket.Packet.Builder packet=MsgPBPacket.Packet.newBuilder();
+        MsgTest.MsgTestRequest.Builder req=MsgTest.MsgTestRequest.newBuilder();
+        req.setMsg(msg);
+        packet.setEBody(req.build().toByteString());
         packet.setCmd("#msgPushed");
 
 

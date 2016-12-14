@@ -1,17 +1,8 @@
 package com.msgtouch.client;
 
-import com.msgtouch.client.service.ClientService;
-import com.msgtouch.common.service.LoginService;
-import com.msgtouch.framework.Bootstrap;
-import com.msgtouch.framework.settings.SocketClientSetting;
-import com.msgtouch.framework.socket.SocketEngine;
-import com.msgtouch.framework.socket.client.MsgTouchClientApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 
 /**
  * Created by Dean on 2016/10/9.

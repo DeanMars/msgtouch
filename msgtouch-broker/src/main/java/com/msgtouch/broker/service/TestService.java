@@ -1,6 +1,5 @@
 package com.msgtouch.broker.service;
 
-import com.msgtouch.common.service.LoginService;
 import com.msgtouch.framework.annotation.RpcService;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class TestService {
 
     @RpcService
-    private LoginService msgService;
+    private com.msgtouch.common.service.TestService msgService;
 
 
     public String  test(){
