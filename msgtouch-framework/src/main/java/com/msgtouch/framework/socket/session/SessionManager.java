@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Dean on 2016/11/29.
@@ -17,8 +18,7 @@ public class SessionManager {
         return sessionManager;
     }
 
-
-    private static Map<String,ISession> sessionMap=new HashMap<String, ISession>();
+    private static Map<String,ISession> sessionMap=new  ConcurrentHashMap<String, ISession>();
 
     public void addAnonymousSession(ISession session){
         if(!containSession(session)){
@@ -38,16 +38,16 @@ public class SessionManager {
     }
 
 
-    public boolean regesterSession(String key,Session session,boolean isforce) {
+    public boolean regesterSession(String key,ISession session,boolean isforce) {
         ISession se=sessionMap.get(key);
         if(null!=se){
             if(isforce){
                 se.disconnect(true);
-                sessionMap.put(key,session);
             }else{
                 return false;
             }
         }
+        sessionMap.put(key,session);
         return true;
     }
 

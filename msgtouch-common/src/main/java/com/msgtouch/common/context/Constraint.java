@@ -11,7 +11,7 @@ public class Constraint {
     //broker 集群名
     public static final String MSGTOUCH_BROKER="msgtouch_broker";
 
-
-
+    //toucher services
+    public  static final String TOUCHER_SERVICE_LOGIN="login";
 
 }

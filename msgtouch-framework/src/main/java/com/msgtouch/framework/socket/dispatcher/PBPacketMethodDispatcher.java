@@ -1,5 +1,6 @@
 package com.msgtouch.framework.socket.dispatcher;
 
+import com.msgtouch.framework.annotation.Unauthorization;
 import com.msgtouch.framework.exception.MsgTouchException;
 import com.msgtouch.framework.socket.client.AbstractPBMsgPushedListener;
 import com.msgtouch.framework.socket.client.MsgPushedListener;
@@ -7,6 +8,8 @@ import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.packet.MsgPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.Session;
+import com.msgtouch.framework.socket.session.SessionManager;
+import com.msgtouch.framework.utils.ClassUtils;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,14 @@ public class PBPacketMethodDispatcher extends MethodDispatcher<MsgPBPacket.Packe
                             throw new RuntimeException("PBPacketMethodDispatcher method cmd=" + cmd + " not found!");
                         }
                         Method method=msgTouchMethodInvoker.getMethod();
+                        MsgPBPacket.Packet.Builder ret=builder;
+                        Unauthorization unauthorization=method.getAnnotation(Unauthorization.class);
+                        if(unauthorization==null&&!authorization(ret)){
+                            logger.error("PBPacketMethodDispatcher Unauthorization ！！packet={}",ret.toString());
+                            ret.setRetCode(MsgPBPacket.RetCode.ERROR_NO_SESSION);
+                            responseClient(session,ret);
+                            return;
+                        }
                         Class []types=method.getParameterTypes();
                         List<Object> list=new ArrayList<Object>();
                         for(Class clazz:types){
@@ -66,7 +77,6 @@ public class PBPacketMethodDispatcher extends MethodDispatcher<MsgPBPacket.Packe
                             }
                         }
                         Object[] params = list.toArray();
-                        MsgPBPacket.Packet.Builder ret=builder;
                         try {
                             ret = (MsgPBPacket.Packet.Builder) msgTouchMethodInvoker.invoke(params);
                         } catch (Exception e) {
@@ -75,13 +85,7 @@ public class PBPacketMethodDispatcher extends MethodDispatcher<MsgPBPacket.Packe
                             ret.setError(e.getMessage());
                             ret.setRetCode(MsgPBPacket.RetCode.EXCEPTION);
                         }
-                        ret.setMsgType(MsgPBPacket.MsgType.Response);
-                        Channel channel = session.getChannel();
-                        if (channel.isActive()) {
-                            channel.writeAndFlush(ret);
-                        } else {
-                            logger.error("channel is not active:packet = {}", builder.build().toString());
-                        }
+                        responseClient(session,ret);
                     } else {
                         SyncRpcCallBack callBack = session.getAttribute(Session.SYNC_CALLBACK_MAP).get(builder.getSeq());
                         if (callBack != null) {
@@ -91,9 +95,31 @@ public class PBPacketMethodDispatcher extends MethodDispatcher<MsgPBPacket.Packe
                 }
             }
         });
-
-
     }
+
+
+    private void responseClient(ISession session,MsgPBPacket.Packet.Builder ret){
+        ret.setMsgType(MsgPBPacket.MsgType.Response);
+        Channel channel = session.getChannel();
+        if (channel.isActive()) {
+            channel.writeAndFlush(ret);
+        } else {
+            logger.error("channel is not active:packet = {}", ret.build().toString());
+        }
+    }
+
+
+    private boolean authorization(MsgPBPacket.Packet.Builder packet){
+        boolean ret=false;
+        long uid=packet.getUid();
+        String gameId=packet.getGameId();
+        ISession session=SessionManager.getInstance().getSession(uid+"_"+gameId);
+        if(null!=session&&session.isActive()){
+            return true;
+        }
+        return ret;
+    }
+
 
 
     private void handlerPush(ISession session, MsgPBPacket.Packet.Builder builder){

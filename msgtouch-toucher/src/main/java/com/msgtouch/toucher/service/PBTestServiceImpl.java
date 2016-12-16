@@ -30,8 +30,6 @@ public class PBTestServiceImpl implements PBTestService {
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
-
-
         return packet;
     }
 }

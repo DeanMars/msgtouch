@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class TestServiceImpl implements TestService {
 
     @Override
-    public String login(String str) {
+    public String test(String str) {
         return "LoginServiceImpl getMsg success  ----" +str;
     }
 
