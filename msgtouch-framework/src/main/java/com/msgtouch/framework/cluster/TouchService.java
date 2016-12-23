@@ -7,64 +7,31 @@ import java.util.List;
  * Created by Dean on 2016/11/22.
  */
 public class TouchService {
+    private String host;
+    private int port;
+    private List<TouchApp> appList=new ArrayList<TouchApp>();
 
-    private String name;
-
-    public String getName() {
-        return name;
+    public List<TouchApp> getAppList() {
+        return appList;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAppList(List<TouchApp> appList) {
+        this.appList = appList;
     }
 
-    private List<TouchCluster>  providers=new ArrayList<TouchCluster>();
-
-    private List<TouchCluster>  consumers=new ArrayList<TouchCluster>();
-
-    private List<String>  routers=new ArrayList<String>();
-
-    public List<TouchCluster> getProviders() {
-        return providers;
+    public String getHost() {
+        return host;
     }
 
-    public void setProviders(List<TouchCluster> providers) {
-        this.providers = providers;
+    public void setHost(String host) {
+        this.host = host;
     }
 
-    public List<TouchCluster> getConsumers() {
-        return consumers;
+    public int getPort() {
+        return port;
     }
 
-    public void setConsumers(List<TouchCluster> consumers) {
-        this.consumers = consumers;
+    public void setPort(int port) {
+        this.port = port;
     }
-
-    public List<String> getRouters() {
-        return routers;
-    }
-
-    public void setRouters(List<String> routers) {
-        this.routers = routers;
-    }
-
-    public void addProvider(TouchCluster touchCluster){
-        if(null!=touchCluster){
-            providers.add(touchCluster);
-        }
-    }
-
-    public void addConsumer(TouchCluster touchCluster){
-        if(null!=touchCluster){
-            consumers.add(touchCluster);
-        }
-    }
-
-    public void addRouters(String router){
-        if(null!=router){
-            routers.add(router);
-        }
-    }
-
-
 }

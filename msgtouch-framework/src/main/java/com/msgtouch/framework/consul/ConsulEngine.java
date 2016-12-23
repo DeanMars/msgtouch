@@ -3,13 +3,12 @@ package com.msgtouch.framework.consul;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Optional;
 import com.google.common.net.HostAndPort;
+import com.msgtouch.framework.cluster.TouchApp;
 import com.msgtouch.framework.cluster.TouchCluster;
-import com.msgtouch.framework.cluster.TouchRoot;
 import com.msgtouch.framework.cluster.TouchService;
-import com.msgtouch.framework.context.Constraint;
 import com.msgtouch.framework.settings.ConsulSetting;
 import com.msgtouch.framework.settings.SettingsBuilder;
-import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
+import com.msgtouch.framework.socket.dispatcher.MethodDispatcher;
 import com.orbitz.consul.AgentClient;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.HealthClient;
@@ -28,7 +27,6 @@ import org.springframework.context.ApplicationContext;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -38,9 +36,7 @@ public class ConsulEngine {
     private static final ConsulEngine consulEngine=new ConsulEngine();
     private  Logger logger= LoggerFactory.getLogger(ConsulEngine.class);
     private  Consul consul=null;
-    private JsonPacketMethodDispatcher msgTouchMethodDispatcher;
     private ConsulSetting setting=null;
-    private TouchCluster touchCluster;
     private ConsulEngine(){
 
     }
@@ -49,36 +45,29 @@ public class ConsulEngine {
         return consulEngine;
     }
 
-    public void bind(ApplicationContext applicationContext,JsonPacketMethodDispatcher msgTouchMethodDispatcher){
-        this.msgTouchMethodDispatcher=msgTouchMethodDispatcher;
+    public void bind(ApplicationContext applicationContext){
         this.setting = SettingsBuilder.getConsulSetting();
         if(null==consul) {
             consul = Consul.builder().withHostAndPort(HostAndPort.fromString(setting.consulHostAndPort)).build();
         }
-        registeService();
-
     }
 
     /**
      * 服务注册
      *
      */
-    public void registeService(){
+    public void registeService(MethodDispatcher msgTouchMethodDispatcher){
         AgentClient agentClient=consul.agentClient();
         List<String> list=msgTouchMethodDispatcher.getClusterlist();
         for(String clusterName:list){
             ImmutableRegCheck immutableCheck=ImmutableRegCheck.builder().http(setting.healthUrl)
                     .interval(setting.healthIntervalSecond+"s").build();
             ImmutableRegistration.Builder builder=ImmutableRegistration.builder();
-            builder.id(clusterName+"_"+setting.ipAddress+":"+setting.port).name(clusterName).addTags("")
+            String id=getServiceId(clusterName);
+            builder.id(id).name(clusterName).addTags("")
                     .address(setting.ipAddress).port(setting.port).addChecks(immutableCheck);
             agentClient.register(builder.build());
-
         }
-
-        //this.touchCluster=buildTouchCluster(msgTouchMethodDispatcher, setting);
-        //registeProvider(touchCluster,msgTouchMethodDispatcher);
-
     }
 
     public void findServices(List<String> serviceList){
@@ -115,51 +104,6 @@ public class ConsulEngine {
 
     }
 
-    public void registeProvider(TouchCluster touchCluster,JsonPacketMethodDispatcher msgTouchMethodDispatcher){
-        KeyValueClient keyValueClient=consul.keyValueClient();
-        TouchRoot root=getTouchServiceRoot(keyValueClient);
-        for(String serviceClasssName:msgTouchMethodDispatcher.getClusterlist()){
-            TouchService touchService=null;
-            if(root.contailService(serviceClasssName)){
-                touchService= root.getSerrviceByName(serviceClasssName);
-                touchService.addProvider(touchCluster);
-            }else{
-                touchService=new TouchService();
-                touchService.setName(serviceClasssName);
-                touchService.addProvider(touchCluster);
-            }
-            root.addServices(touchService);
-            logger.info("TouchRoot addServices serviceName={}",touchService.getName());
-        }
-        keyValueClient.putValue(Constraint.FRAMEWORK_SERVICE_KEY,JSON.toJSONString(root));
-
-    }
-
-
-    public void registeConsumer(List<String> services){
-        KeyValueClient keyValueClient=consul.keyValueClient();
-        TouchRoot root=getTouchServiceRoot(keyValueClient);
-        for(String service:services){
-            if(root.contailService(service)){
-                TouchService touchService=root.getSerrviceByName(service);
-                touchService.addConsumer(touchCluster);
-            }else{
-                throw new RuntimeException("MsgTouch registeConsumer Exception service "+service+"not exist!");
-            }
-        }
-
-    }
-
-    private TouchCluster buildTouchCluster(JsonPacketMethodDispatcher msgTouchMethodDispatcher, ConsulSetting setting){
-        TouchCluster touchCluster=new TouchCluster();
-        touchCluster.setIp(setting.ipAddress);
-        touchCluster.setPort(setting.port);
-       // touchCluster.setVersion(Bootstrap.getInstances().getContextSetting().APP_VERSION);
-      //  touchCluster.setExt(Bootstrap.getInstances().getContextSetting().APP_EXT);
-        Set<String> cmds=msgTouchMethodDispatcher.getCmds();
-        touchCluster.setCmds(cmds);
-        return touchCluster;
-    }
 
     /**
      * 服务获取
@@ -175,15 +119,81 @@ public class ConsulEngine {
     }
 
 
-    private  TouchRoot  getTouchServiceRoot(KeyValueClient keyValueClient){
-        TouchRoot root=null;
-        Optional<Value> value= keyValueClient.getValue(Constraint.FRAMEWORK_SERVICE_KEY);
-        if(!value.isPresent()){
-            root=new TouchRoot();
-        }else{
-            root=JSON.parseObject(value.toString(),TouchRoot.class);
+    private <T> T getJsonObject(Class<T> clazz,String key){
+        KeyValueClient keyValueClient=consul.keyValueClient();
+        Optional<String> value= keyValueClient.getValueAsString(key);
+        if(value.isPresent()){
+            return JSON.parseObject(value.get(),clazz);
         }
-        return root;
+        return null;
     }
 
+    private void setJsonObject(String key,Object object){
+        KeyValueClient keyValueClient=consul.keyValueClient();
+        keyValueClient.putValue(key,JSON.toJSONString(object));
+    }
+
+
+
+    public void loginApp(long uid,String gameId){
+        String appName=SettingsBuilder.buildContextSetting().APP_NAME;
+        TouchCluster touchCluster=getJsonObject(TouchCluster.class,appName);
+        if(null==touchCluster){
+            touchCluster=new TouchCluster();
+            touchCluster.setAppName(appName);
+        }
+        List<TouchService> serviceList=touchCluster.getServices();
+        TouchService selfService=null;
+        for(TouchService touchService:serviceList){
+            if(touchService.getHost().equals(setting.ipAddress)&&touchService.getPort()==setting.port){
+                selfService=touchService;
+                break;
+            }
+        }
+        if(selfService==null){
+            selfService=new TouchService();
+            selfService.setHost(setting.ipAddress);
+            selfService.setPort(setting.port);
+            touchCluster.addService(selfService);
+        }
+        List<TouchApp> appList=selfService.getAppList();
+        TouchApp touchApp=new TouchApp();
+        touchApp.setUid(uid);
+        touchApp.setGameId(gameId);
+        if(!appList.contains(touchApp)) {
+            appList.add(touchApp);
+        }
+        setJsonObject(appName,touchCluster);
+    }
+
+    public void loginOutApp(long uid,String gameId){
+        String appName=SettingsBuilder.buildContextSetting().APP_NAME;
+        TouchCluster touchCluster=getJsonObject(TouchCluster.class,appName);
+        if(null!=touchCluster) {
+            List<TouchService> serviceList = touchCluster.getServices();
+            TouchService selfService = null;
+            for (TouchService touchService : serviceList) {
+                if (touchService.getHost().equals(setting.ipAddress) && touchService.getPort() == setting.port) {
+                    selfService = touchService;
+                    break;
+                }
+            }
+            if (selfService != null) {
+                List<TouchApp> appList = selfService.getAppList();
+                for (TouchApp touchApp : appList) {
+                    if (touchApp.getGameId().equals(gameId) && touchApp.getUid() == uid) {
+                        appList.remove(touchApp);
+                        break;
+                    }
+                }
+            }
+            setJsonObject(appName, touchCluster);
+        }
+    }
+
+
+
+    private String getServiceId(String appName){
+        return appName+"_"+setting.ipAddress+":"+setting.port;
+    }
 }

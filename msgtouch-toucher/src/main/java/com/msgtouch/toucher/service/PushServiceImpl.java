@@ -43,30 +43,43 @@ public class PushServiceImpl {
 
     public void pushPBAll(String msg){
         Collection<ISession> list=SessionManager.getInstance().getAllSession();
-
-        TestVo testVo=new TestVo();
-        testVo.setRequest(msg);
-
-        MsgPBPacket.Packet.Builder packet=MsgPBPacket.Packet.newBuilder();
-        MsgTest.MsgTestRequest.Builder req=MsgTest.MsgTestRequest.newBuilder();
-        req.setMsg(msg);
-        packet.setEBody(req.build().toByteString());
-        packet.setCmd("#msgPushed");
-
-
+        MsgPBPacket.Packet.Builder packet=buildTestPacket(msg);
         for(ISession session:list){
-            try {
-                MsgPBPacket.Packet.Builder ret= session.pushPBMsg(packet, 10);
-                logger.info("pushAll ret testVo Request={},Response={}",ret.getUid(),ret.getCustomerId());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                e.printStackTrace();
-            }
+            pushMsg(session,packet);
         }
 
     }
 
+
+    public void pushMsg(String msg,long uid,String gameId){
+        String userKey=SessionManager.getInstance().getUserKey(uid,gameId);
+        ISession session=SessionManager.getInstance().getSession(userKey);
+        if(null!=session){
+            MsgPBPacket.Packet.Builder packet=buildTestPacket(msg);
+            pushMsg(session,packet);
+        }
+    }
+
+
+    private void pushMsg(ISession session,MsgPBPacket.Packet.Builder packet){
+        try {
+            MsgPBPacket.Packet.Builder ret= session.pushPBMsg(packet, 10);
+            logger.info("pushAll ret testVo Request={},Response={}",ret.getUid(),ret.getCustomerId());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private MsgPBPacket.Packet.Builder buildTestPacket(String msg){
+        MsgPBPacket.Packet.Builder packet=MsgPBPacket.Packet.newBuilder();
+        MsgTest.MsgTestRequest.Builder req=MsgTest.MsgTestRequest.newBuilder();
+        req.setMsg(msg);
+        packet.setEBody(req.build().toByteString());
+        //packet.setCmd("#msgPushed");
+        return packet;
+    }
 }

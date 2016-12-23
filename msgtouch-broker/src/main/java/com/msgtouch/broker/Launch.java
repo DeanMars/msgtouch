@@ -33,21 +33,6 @@ public class Launch {
 
         logger.info("Launch success !");
 
-        RemoteUtils.getRpcServices(applicationContext);
-
-        DefaultListableBeanFactory defaultListableBeanFactory=(DefaultListableBeanFactory)applicationContext.getBeanFactory();
-        String [] beanNames=defaultListableBeanFactory.getBeanDefinitionNames();
-
-        for(String beanName:beanNames){
-            if(beanName.contains("sgService")){
-                logger.info("beanNames ={} !",beanName);
-            }
-        }
-        TestService testService=applicationContext.getBean(TestService.class);
-
-       // String ret= testService.test();
-
-        //logger.info("ret={}",ret);
     }
 
 }

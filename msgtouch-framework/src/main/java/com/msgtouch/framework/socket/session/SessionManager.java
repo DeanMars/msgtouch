@@ -1,5 +1,7 @@
 package com.msgtouch.framework.socket.session;
 
+import com.msgtouch.framework.consul.ConsulEngine;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,25 +42,33 @@ public class SessionManager {
 
     public boolean regesterSession(String key,ISession session,boolean isforce) {
         ISession se=sessionMap.get(key);
-        if(null!=se){
+        if(null!=se&&se!=session){
             if(isforce){
                 se.disconnect(true);
             }else{
                 return false;
             }
         }
+        session.setAttribute(Session.USER_KEY,key);
         sessionMap.put(key,session);
         return true;
     }
 
 
-    public boolean removeSession(ISession session){
+    public void removeSession(ISession session){
         for(Map.Entry<String,ISession> entry:sessionMap.entrySet()){
             if(entry.getValue()==session){
                 sessionMap.remove(entry.getKey());
             }
         }
-        return false;
+        String userKey=session.getAttribute(Session.USER_KEY);
+        if(null!=userKey){
+            String []args=userKey.split("_");
+            String gameId=args[0];
+            long uid=Long.parseLong(args[1]);
+            ConsulEngine.getInstance().loginOutApp(uid,gameId);
+        }
+
     }
 
     public ISession getSession(String key){
@@ -68,6 +78,11 @@ public class SessionManager {
 
     public Collection<ISession> getAllSession(){
         return sessionMap.values();
+    }
+
+
+    public String getUserKey(long uid,String gameId){
+        return gameId+"_"+uid;
     }
 
 

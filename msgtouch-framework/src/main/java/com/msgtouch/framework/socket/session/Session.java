@@ -23,6 +23,9 @@ public class Session implements ISession{
 	public static final AttributeKey<ISession> SESSION_KEY=new AttributeKey<ISession>("SESSION_KEY");
 	/**秘钥*/
 	public static final AttributeKey<String> SECRRET_KEY=new AttributeKey<String>("SECRRET_KEY");
+	/**秘钥*/
+	public static final AttributeKey<String> USER_KEY=new AttributeKey<String>("USER_KEY");
+
 	/**同步返回Future*/
 	public static final AttributeKey<Map<String,SyncRpcCallBack<?>>> SYNC_CALLBACK_MAP =new AttributeKey<Map<String,SyncRpcCallBack<?>>>("SYNC_CALLBACK_MAP");
 	/**异步回调Map*/

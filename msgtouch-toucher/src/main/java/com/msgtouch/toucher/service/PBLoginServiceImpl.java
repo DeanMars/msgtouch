@@ -1,6 +1,8 @@
 package com.msgtouch.toucher.service;
 
 import com.msgtouch.common.service.PBLoginService;
+import com.msgtouch.framework.consul.ConsulEngine;
+import com.msgtouch.framework.settings.SettingsBuilder;
 import com.msgtouch.framework.socket.packet.MsgPBPacket;
 import com.msgtouch.framework.socket.session.ISession;
 import com.msgtouch.framework.socket.session.SessionManager;
@@ -25,8 +27,10 @@ public class PBLoginServiceImpl implements PBLoginService {
             //验证登陆逻辑
 
 
-
-            SessionManager.getInstance().regesterSession(uid+"_"+gameId,session,true);
+            //绑定用户session
+            String userKey=SessionManager.getInstance().getUserKey(uid,gameId);
+            SessionManager.getInstance().regesterSession(userKey,session,true);
+            ConsulEngine.getInstance().loginApp(uid,gameId);
         }
         packet.setRetCode(MsgPBPacket.RetCode.OK);
         return packet;

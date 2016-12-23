@@ -1,6 +1,7 @@
 package com.msgtouch.framework;
 
 
+import com.msgtouch.framework.consul.ConsulEngine;
 import com.msgtouch.framework.context.SpringBeanAccess;
 import com.msgtouch.framework.settings.SettingsBuilder;
 import com.msgtouch.framework.settings.SocketServerSetting;
@@ -49,9 +50,8 @@ public class Bootstrap {
         PBPacketMethodDispatcher msgTouchMethodDispatcher=new PBPacketMethodDispatcher(setting.cmdThreadSize);
         MsgTouchServiceEngine.getInstances().loadService(msgTouchMethodDispatcher);
         //consul 服务注册
-        //ConsulEngine.getInstance().bind(applicationContext,msgTouchMethodDispatcher);
-        //连接注册中心
-        //ZooKeeperEngine.getInstances().start(applicationContext);
+        ConsulEngine.getInstance().bind(applicationContext);
+        ConsulEngine.getInstance().registeService(msgTouchMethodDispatcher);
         //启动netty toucher
         SocketEngine.startPBPacketServer(setting,msgTouchMethodDispatcher);
 

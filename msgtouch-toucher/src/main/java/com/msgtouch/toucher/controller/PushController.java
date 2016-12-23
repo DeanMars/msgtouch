@@ -15,9 +15,20 @@ public class PushController {
     private PushServiceImpl pushServiceImpl;
 
     @RequestMapping("pushAll")
-    public String  pushAll(@RequestParam("msg")String msg){
+    public String  pushAll(@RequestParam(value = "msg",required = true)String msg){
         pushServiceImpl.pushPBAll(msg);
         return "";
     }
+
+
+    @RequestMapping("pushMsg")
+    public String  pushAll(@RequestParam(value = "msg",required = true)String msg,
+                           @RequestParam(value = "uid",required = true)long uid,
+                           @RequestParam(value = "gameId",required = true)String gameId
+                           ){
+        pushServiceImpl.pushMsg(msg,uid,gameId);
+        return "";
+    }
+
 
 }

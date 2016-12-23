@@ -1,63 +1,32 @@
 package com.msgtouch.framework.cluster;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
- * Created by Dean on 2016/9/12.
+ * Created by Dean on 2016/12/23.
  */
 public class TouchCluster {
-    private String ip;
-    private int port;
-    private String version;
-    private Set<String> cmds=new HashSet<String>();
+    private String appName;
+    private List<TouchService> services=new ArrayList<TouchService>();
 
-
-    private String ext;
-
-    public String getIp() {
-        return ip;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
-    public int getPort() {
-        return port;
+    public List<TouchService> getServices() {
+        return services;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setServices(List<TouchService> services) {
+        this.services = services;
     }
 
-    public Set<String> getCmds() {
-        return cmds;
+    public void addService(TouchService services){
+        this.services.add(services);
     }
-
-    public void setCmds(Set<String> cmds) {
-        this.cmds = cmds;
-    }
-
-    public String getExt() {
-        return ext;
-    }
-
-    public void setExt(String ext) {
-        this.ext = ext;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public void addCmd(String service){
-        cmds.add(service);
-    }
-
 }
