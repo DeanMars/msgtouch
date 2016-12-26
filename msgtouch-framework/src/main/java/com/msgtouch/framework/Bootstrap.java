@@ -35,7 +35,7 @@ public class Bootstrap {
         return bootstrap;
     }
 
-    private void initContext(ApplicationContext applicationContext){
+    public void initContext(ApplicationContext applicationContext){
         //上下文
         SpringBeanAccess.getInstances().initSpringContext(applicationContext);
         //初始化配置
@@ -51,7 +51,7 @@ public class Bootstrap {
         MsgTouchServiceEngine.getInstances().loadService(msgTouchMethodDispatcher);
         //consul 服务注册
         ConsulEngine.getInstance().bind(applicationContext);
-        ConsulEngine.getInstance().registeService(msgTouchMethodDispatcher);
+        ConsulEngine.getInstance().registeService(msgTouchMethodDispatcher.getClusterlist());
         //启动netty toucher
         SocketEngine.startPBPacketServer(setting,msgTouchMethodDispatcher);
 

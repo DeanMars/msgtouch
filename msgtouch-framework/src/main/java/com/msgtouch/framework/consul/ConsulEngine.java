@@ -45,6 +45,10 @@ public class ConsulEngine {
         return consulEngine;
     }
 
+    public Consul getConsul() {
+        return consul;
+    }
+
     public void bind(ApplicationContext applicationContext){
         this.setting = SettingsBuilder.getConsulSetting();
         if(null==consul) {
@@ -56,10 +60,9 @@ public class ConsulEngine {
      * 服务注册
      *
      */
-    public void registeService(MethodDispatcher msgTouchMethodDispatcher){
+    public void registeService(List<String> clusterList){
         AgentClient agentClient=consul.agentClient();
-        List<String> list=msgTouchMethodDispatcher.getClusterlist();
-        for(String clusterName:list){
+        for(String clusterName:clusterList){
             ImmutableRegCheck immutableCheck=ImmutableRegCheck.builder().http(setting.healthUrl)
                     .interval(setting.healthIntervalSecond+"s").build();
             ImmutableRegistration.Builder builder=ImmutableRegistration.builder();
