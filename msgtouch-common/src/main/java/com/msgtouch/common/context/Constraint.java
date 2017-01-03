@@ -7,9 +7,9 @@ public class Constraint {
 
 
     //toucher 集群名
-    public static final String MSGTOUCH_TOUCHER="msgtouch_toucher";
+    public static final String MSGTOUCH_TOUCHER="msgToucher";
     //broker 集群名
-    public static final String MSGTOUCH_BROKER="msgtouch_broker";
+    public static final String MSGTOUCH_BROKER="msgBroker";
 
     //toucher services
     public  static final String TOUCHER_SERVICE_LOGIN="login";

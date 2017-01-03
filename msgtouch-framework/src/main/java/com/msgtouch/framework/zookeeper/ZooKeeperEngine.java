@@ -1,3 +1,4 @@
+/*
 package com.msgtouch.framework.zookeeper;
 
 import com.msgtouch.framework.context.Constraint;
@@ -20,9 +21,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
+*/
 /**
  * Created by Dean on 2016/9/6.
- */
+ *//*
+
 public class ZooKeeperEngine {
     private static Logger logger= LoggerFactory.getLogger(SocketEngine.class);
 
@@ -56,13 +59,15 @@ public class ZooKeeperEngine {
             zooKeeper=initZooKeeper(setting);
 
             //创建根节点
-          /*  SessionWatcher clusterWatcher=new SessionWatcher();
+          */
+/*  SessionWatcher clusterWatcher=new SessionWatcher();
             String root="/"+ Constraint.ZOOKEEPER_ROOT;
             Stat stat=zooKeeper.exists(root,clusterWatcher);
             if(null==stat){
                 zooKeeper.create(root, Constraint.ZOOKEEPER_ROOT.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL, CreateMode.PERSISTENT);
             }
-            zooKeeper.getChildren(root,clusterWatcher);*/
+            zooKeeper.getChildren(root,clusterWatcher);*//*
+
 
             //创建根节点
             initMsgTouchRoot();
@@ -73,7 +78,8 @@ public class ZooKeeperEngine {
             //serssion节点
             initMsgTouchSessionRoot(new SessionWatcher());
 
-           /* //创建当前服务临时节点
+           */
+/* //创建当前服务临时节点
             ServiceWatcher serviceWatcher=new ServiceWatcher();
             InetAddress inetAddress=InetAddress.getLocalHost();
             String ip=inetAddress.getHostAddress().toString();
@@ -93,7 +99,8 @@ public class ZooKeeperEngine {
                 zooKeeper.create(clusterPath, data.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL, CreateMode.EPHEMERAL);
             }else{
                 zooKeeper.setData(clusterPath, data.getBytes(),serverStat.getVersion());
-            }*/
+            }*//*
+
 
 
             logger.info("ZkManager bind success !");
@@ -163,3 +170,4 @@ public class ZooKeeperEngine {
     }
 
 }
+*/

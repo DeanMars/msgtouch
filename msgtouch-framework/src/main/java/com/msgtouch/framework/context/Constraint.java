@@ -9,6 +9,10 @@ public class Constraint {
      * framework
      */
     public static final String FRAMEWORK_NAME="MsgTouch";
+    //toucher 集群名
+    public static final String MSGTOUCH_TOUCHER="msgToucher";
+    //broker 集群名
+    public static final String MSGTOUCH_BROKER="msgBroker";
 
     public static final String FRAMEWORK_SERVICE_KEY="MsgTouch_Services";
     public static final String FRAMEWORK_SESSION_KEY="MsgTouch_UserSession";

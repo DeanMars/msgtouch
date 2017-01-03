@@ -6,18 +6,17 @@ import com.google.common.net.HostAndPort;
 import com.msgtouch.framework.cluster.TouchApp;
 import com.msgtouch.framework.cluster.TouchCluster;
 import com.msgtouch.framework.cluster.TouchService;
+import com.msgtouch.framework.exception.MsgTouchException;
 import com.msgtouch.framework.settings.ConsulSetting;
 import com.msgtouch.framework.settings.SettingsBuilder;
 import com.msgtouch.framework.socket.dispatcher.MethodDispatcher;
-import com.orbitz.consul.AgentClient;
-import com.orbitz.consul.Consul;
-import com.orbitz.consul.HealthClient;
-import com.orbitz.consul.KeyValueClient;
+import com.orbitz.consul.*;
 import com.orbitz.consul.cache.ConsulCache;
 import com.orbitz.consul.cache.ServiceHealthCache;
 import com.orbitz.consul.cache.ServiceHealthKey;
 import com.orbitz.consul.model.agent.ImmutableRegCheck;
 import com.orbitz.consul.model.agent.ImmutableRegistration;
+import com.orbitz.consul.model.agent.Registration;
 import com.orbitz.consul.model.health.ServiceHealth;
 import com.orbitz.consul.model.kv.Value;
 import org.slf4j.Logger;
@@ -46,6 +45,9 @@ public class ConsulEngine {
     }
 
     public Consul getConsul() {
+        if(null==consul){
+            throw new MsgTouchException("ConsulEngine has not bind,please use the method bind first ! ");
+        }
         return consul;
     }
 
@@ -67,7 +69,7 @@ public class ConsulEngine {
                     .interval(setting.healthIntervalSecond+"s").build();
             ImmutableRegistration.Builder builder=ImmutableRegistration.builder();
             String id=getServiceId(clusterName);
-            builder.id(id).name(clusterName).addTags("")
+            builder.id(id).name(clusterName).addTags(clusterName)
                     .address(setting.ipAddress).port(setting.port).addChecks(immutableCheck);
             agentClient.register(builder.build());
         }
@@ -122,7 +124,7 @@ public class ConsulEngine {
     }
 
 
-    private <T> T getJsonObject(Class<T> clazz,String key){
+    public <T> T getJsonObject(Class<T> clazz,String key){
         KeyValueClient keyValueClient=consul.keyValueClient();
         Optional<String> value= keyValueClient.getValueAsString(key);
         if(value.isPresent()){
@@ -131,7 +133,7 @@ public class ConsulEngine {
         return null;
     }
 
-    private void setJsonObject(String key,Object object){
+    public void setJsonObject(String key,Object object){
         KeyValueClient keyValueClient=consul.keyValueClient();
         keyValueClient.putValue(key,JSON.toJSONString(object));
     }
