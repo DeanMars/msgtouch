@@ -1,8 +1,8 @@
 package com.msgtouch.framework.utils;
 
-import com.msgtouch.framework.annotation.MsgService;
-import com.msgtouch.framework.annotation.RpcService;
-import com.msgtouch.framework.socket.client.CglibRpcCallProxyFactory;
+import com.msgtouch.network.annotation.MsgService;
+import com.msgtouch.network.annotation.RpcService;
+import com.msgtouch.network.socket.client.CglibRpcCallProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -33,7 +33,7 @@ public class RemoteUtils {
                         MsgService msgService=(MsgService)fieldClass.getAnnotation(MsgService.class);
                         remoteService.add(msgService.value());
                         logger.debug("RemoteUtils getRpcServices RpcService={} "+fieldClass.getName());
-                        Object classValue=CglibRpcCallProxyFactory.getInstance().getRpcCallProxy(true,fieldClass);
+                        Object classValue= CglibRpcCallProxyFactory.getInstance().getRpcCallProxy(true,fieldClass);
                         field.setAccessible(true);
                         field.set(beanObj,classValue);
                         field.setAccessible(false);

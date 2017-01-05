@@ -11,7 +11,7 @@ public class HealthController {
 
     @RequestMapping("health")
     public String  health(){
-        return "{code:0,msg:\"success\"}";
+        return "{\"code\":0,\"msg\":\"success\"}";
     }
 
 }

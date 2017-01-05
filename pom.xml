@@ -21,6 +21,9 @@
         <module>msgtouch-client</module>
         <module>msgtouch-common</module>
         <module>msgtouch-clienttest</module>
+        <module>msgtouch-network</module>
+        <module>msgtouch-network-client</module>
+        <module>msgtouch-network-server</module>
     </modules>
 
     <dependencies>

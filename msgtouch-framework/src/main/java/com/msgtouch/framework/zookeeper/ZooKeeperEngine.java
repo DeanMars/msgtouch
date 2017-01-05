@@ -27,7 +27,7 @@ import java.util.List;
  *//*
 
 public class ZooKeeperEngine {
-    private static Logger logger= LoggerFactory.getLogger(SocketEngine.class);
+    private static Logger logger= LoggerFactory.getLogger(NetServerEngine.class);
 
     private ZooKeeper zooKeeper;
     private static final String key="zhangchuqiang";

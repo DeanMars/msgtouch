@@ -1,0 +1,41 @@
+package com.msgtouch.common.proto;
+option java_package="com.msgtouch.network.socket.packet";
+option java_outer_classname="MsgPBPacket";
+
+enum AppPlatform {
+    Android = 1;
+    Web = 2;
+    Ios = 3;
+}
+
+enum MsgType {
+    Request = 1;
+    Response = 2;
+}
+
+message Packet {
+    optional MsgType msgType=1;
+    optional string seq=2;
+    optional string appName = 3; // app 名字
+    optional AppPlatform platform = 4; // 客户端类型
+    optional string cmd = 5; // main cmds
+    optional string customerId= 6;
+    optional uint64 uid = 7; //user identity(sessionID)
+    optional string error = 8; // error
+    optional bytes  eBody = 9; // encrypt body
+    optional string gameId= 10; //游戏id
+    optional string advno= 11; //渠道号
+    optional string sdkVersion = 12; // sdk 版本
+    optional string imei = 13; // imei
+    optional RetCode retCode=14;
+}
+
+
+enum RetCode{
+    TIMEOUT = 1000;
+    OK=0;   //正常 response
+    EXCEPTION=-1;
+    PROTO_ERROR=-2;
+    ERROR_NO_SESSION = -3; // 告诉客户端重新登录
+    PUSH=-4;
+}

@@ -1,11 +1,10 @@
 package com.msgtouch.toucher.service;
 
 import com.msgtouch.common.service.PBLoginService;
-import com.msgtouch.framework.consul.ConsulEngine;
-import com.msgtouch.framework.settings.SettingsBuilder;
-import com.msgtouch.framework.socket.packet.MsgPBPacket;
-import com.msgtouch.framework.socket.session.ISession;
-import com.msgtouch.framework.socket.session.SessionManager;
+import com.msgtouch.framework.registry.ConsulEngine;
+import com.msgtouch.network.socket.packet.MsgPBPacket;
+import com.msgtouch.network.socket.session.ISession;
+import com.msgtouch.network.socket.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ public class PBLoginServiceImpl implements PBLoginService {
     private  static Logger logger= LoggerFactory.getLogger(PBLoginServiceImpl.class);
 
     @Override
-    public MsgPBPacket.Packet.Builder login(ISession session,MsgPBPacket.Packet.Builder packet) {
+    public MsgPBPacket.Packet.Builder login(ISession session, MsgPBPacket.Packet.Builder packet) {
         long uid=packet.getUid();
         String gameId=packet.getGameId();
         String customerId=packet.getCustomerId();
@@ -28,7 +27,7 @@ public class PBLoginServiceImpl implements PBLoginService {
 
 
             //绑定用户session
-            String userKey=SessionManager.getInstance().getUserKey(uid,gameId);
+            String userKey= SessionManager.getInstance().getUserKey(uid,gameId);
             SessionManager.getInstance().regesterSession(userKey,session,true);
             ConsulEngine.getInstance().loginApp(uid,gameId);
         }

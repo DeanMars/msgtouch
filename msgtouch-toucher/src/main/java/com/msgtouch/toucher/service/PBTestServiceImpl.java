@@ -3,7 +3,7 @@ package com.msgtouch.toucher.service;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.msgtouch.common.proto.MsgTest;
 import com.msgtouch.common.service.PBTestService;
-import com.msgtouch.framework.socket.packet.MsgPBPacket;
+import com.msgtouch.network.socket.packet.MsgPBPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

@@ -1,15 +1,17 @@
 package com.msgtouch.framework;
 
 
-import com.msgtouch.framework.consul.ConsulEngine;
-import com.msgtouch.framework.context.SpringBeanAccess;
-import com.msgtouch.framework.settings.SettingsBuilder;
-import com.msgtouch.framework.settings.SocketServerSetting;
-import com.msgtouch.framework.socket.SocketEngine;
-import com.msgtouch.framework.socket.dispatcher.JsonPacketMethodDispatcher;
-import com.msgtouch.framework.socket.dispatcher.MsgTouchServiceEngine;
-import com.msgtouch.framework.socket.dispatcher.PBPacketMethodDispatcher;
+import com.msgtouch.framework.registry.ConsulEngine;
+import com.msgtouch.framework.setting.SettingsBuilder;
 import com.msgtouch.framework.utils.RemoteUtils;
+import com.msgtouch.network.context.Context;
+import com.msgtouch.network.context.SpringBeanAccess;
+import com.msgtouch.network.settings.SocketServerSetting;
+import com.msgtouch.network.socket.NetServerEngine;
+import com.msgtouch.network.socket.dispatcher.JsonPacketMethodDispatcher;
+import com.msgtouch.network.socket.dispatcher.PBPacketMethodDispatcher;
+import com.msgtouch.network.socket.server.MsgTouchServiceEngine;
+import com.msgtouch.network.socket.session.SessionManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -38,6 +40,8 @@ public class Bootstrap {
     public void initContext(ApplicationContext applicationContext){
         //上下文
         SpringBeanAccess.getInstances().initSpringContext(applicationContext);
+        Context.initBeanAccess(SpringBeanAccess.getInstances());
+        SessionManager.getInstance().initRegistryEngine(ConsulEngine.getInstance());
         //初始化配置
         SettingsBuilder.init(applicationContext);
     }
@@ -52,8 +56,10 @@ public class Bootstrap {
         //consul 服务注册
         ConsulEngine.getInstance().bind(applicationContext);
         ConsulEngine.getInstance().registeService(msgTouchMethodDispatcher.getClusterlist());
+        // ConsulEngine.getInstance().bind(applicationContext);
+        //ConsulEngine.getInstance().registeService(msgTouchMethodDispatcher.getClusterlist());
         //启动netty toucher
-        SocketEngine.startPBPacketServer(setting,msgTouchMethodDispatcher);
+        NetServerEngine.startPBPacketServer(setting,msgTouchMethodDispatcher);
 
     }
 
@@ -71,7 +77,7 @@ public class Bootstrap {
         //连接注册中心
         //ZooKeeperEngine.getInstances().start(applicationContext);
         //启动netty toucher
-        SocketEngine.startJsonPacketServer(setting,msgTouchMethodDispatcher);
+        NetServerEngine.startJsonPacketServer(setting,msgTouchMethodDispatcher);
 
     }
 
@@ -90,7 +96,7 @@ public class Bootstrap {
         socketClientSetting.timeOutSecond=20;
 
         try {
-            SocketEngine.startClient(socketClientSetting);
+            NetServerEngine.startClient(socketClientSetting);
         } catch (Exception e) {
             e.printStackTrace();
         }*/

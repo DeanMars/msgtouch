@@ -2,9 +2,9 @@ package com.msgtouch.toucher.service;
 
 import com.msgtouch.common.proto.MsgTest;
 import com.msgtouch.common.vo.TestVo;
-import com.msgtouch.framework.socket.packet.MsgPBPacket;
-import com.msgtouch.framework.socket.session.ISession;
-import com.msgtouch.framework.socket.session.SessionManager;
+import com.msgtouch.network.socket.packet.MsgPBPacket;
+import com.msgtouch.network.socket.session.ISession;
+import com.msgtouch.network.socket.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class PushServiceImpl {
     private  static Logger logger= LoggerFactory.getLogger(PushServiceImpl.class);
 
     public void pushAll(String msg){
-        Collection<ISession> list=SessionManager.getInstance().getAllSession();
+        Collection<ISession> list= SessionManager.getInstance().getAllSession();
 
         TestVo testVo=new TestVo();
         testVo.setRequest(msg);

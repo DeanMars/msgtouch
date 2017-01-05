@@ -1,11 +1,12 @@
 package com.msgtouch.common.service;
 
 import com.msgtouch.common.context.Constraint;
-import com.msgtouch.framework.annotation.MsgMethod;
-import com.msgtouch.framework.annotation.MsgService;
-import com.msgtouch.framework.annotation.Unauthorization;
-import com.msgtouch.framework.socket.packet.MsgPBPacket;
-import com.msgtouch.framework.socket.session.ISession;
+import com.msgtouch.network.annotation.MsgMethod;
+import com.msgtouch.network.annotation.MsgService;
+import com.msgtouch.network.annotation.Unauthorization;
+import com.msgtouch.network.socket.packet.MsgPBPacket;
+import com.msgtouch.network.socket.session.ISession;
+
 
 /**
  * Created by Dean on 2016/10/12.
@@ -16,7 +17,7 @@ public interface PBLoginService {
 
     @Unauthorization
     @MsgMethod(Constraint.TOUCHER_SERVICE_LOGIN)
-    MsgPBPacket.Packet.Builder login(ISession session,MsgPBPacket.Packet.Builder packet);
+    MsgPBPacket.Packet.Builder login(ISession session, MsgPBPacket.Packet.Builder packet);
 
 
 
