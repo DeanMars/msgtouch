@@ -44,8 +44,8 @@ public class CglibRpcCallBack implements MethodInterceptor {
         if(sync){
             return rpcClientApi.syncRpcCall(clusterName,cmd,returnType,params);
         }else{
-           // rpcClientApi.asyncRpcCall(clusterName,cmd,params);
-            return null;
+            rpcClientApi.asyncRpcCall(clusterName,cmd,returnType,null,params);
+            return  null;
         }
     }
 }
