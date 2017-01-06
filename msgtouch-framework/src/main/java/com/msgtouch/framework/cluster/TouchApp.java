@@ -7,11 +7,6 @@ public class TouchApp {
     private long uid;
     private String gameId;
 
-
-    private String getUserKey(){
-        return gameId+"_"+uid;
-    }
-
     public long getUid() {
         return uid;
     }

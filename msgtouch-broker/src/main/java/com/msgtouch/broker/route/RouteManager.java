@@ -1,8 +1,7 @@
 package com.msgtouch.broker.route;
 
 import com.msgtouch.framework.registry.ConsulEngine;
-import com.msgtouch.framework.context.Constraint;
-import com.msgtouch.framework.settings.SettingsBuilder;
+import com.msgtouch.framework.setting.SettingsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

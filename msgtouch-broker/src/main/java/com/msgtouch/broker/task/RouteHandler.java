@@ -6,7 +6,9 @@ import com.msgtouch.broker.route.RouteTarget;
 import com.msgtouch.framework.cluster.TouchApp;
 import com.msgtouch.framework.cluster.TouchCluster;
 import com.msgtouch.framework.cluster.TouchService;
-import com.msgtouch.framework.context.Constraint;
+import com.msgtouch.network.context.Constraint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,25 +23,30 @@ import java.util.concurrent.Executors;
  */
 @Component
 public class RouteHandler {
+    private static Logger logger= LoggerFactory.getLogger(RouteHandler.class);
 
     private ExecutorService executorService=Executors.newSingleThreadExecutor();
 
-    public void handler(List<HealthService> serviceList, TouchCluster touchCluster){
-        executorService.submit(new Handler(serviceList,touchCluster));
+    public void handler(List<HealthService> serviceList, TouchCluster touchCluster,String handlerId){
+        executorService.submit(new Handler(serviceList,touchCluster,handlerId));
     }
 
 
     class Handler implements Runnable{
         private List<HealthService> serviceList;
         private TouchCluster touchCluster;
+        private String handlerId;
 
-        public Handler(List<HealthService> serviceList, TouchCluster touchCluster) {
+        public Handler(List<HealthService> serviceList, TouchCluster touchCluster,String handlerId) {
             this.serviceList = serviceList;
             this.touchCluster = touchCluster;
+            this.handlerId=handlerId;
         }
 
         @Override
         public void run() {
+            long start=System.currentTimeMillis();
+            logger.info("RouteHandler run handlerData start time={} ",start);
             Map<String,RouteTarget> appMap=new HashMap<String,RouteTarget>();
             List<RouteTarget> list=new ArrayList<RouteTarget>();
             for(HealthService healthService:serviceList){
@@ -73,7 +80,11 @@ public class RouteHandler {
 
                 }
             }
+            long end=System.currentTimeMillis();
+            logger.info("RouteHandler run handlerData end time={} ",end);
             RouteManager.getInstance().refreshRoute(list,appMap);
+            end=System.currentTimeMillis();
+            logger.info("RouteHandler run refreshRoute end time={} ",end);
         }
 
     }

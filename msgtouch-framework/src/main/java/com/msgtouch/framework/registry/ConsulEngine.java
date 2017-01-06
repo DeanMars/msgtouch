@@ -89,12 +89,26 @@ public class ConsulEngine implements RegistryEngine {
         return touchCluster;
     }
 
+
+    public String getKValueSign(String key){
+        String result=null;
+        Response<GetValue> response=consulClient.getKVValue(key);
+        GetValue getValue=response.getValue();
+        if(null!=getValue){
+            result=getValue.getValue().toString();
+        }
+        return result;
+    }
+
+
     public <T> T getJsonObject(Class<T> clazz,String key){
         Response<GetValue> response=consulClient.getKVValue(key);
         GetValue getValue=response.getValue();
-        String value=getValue.getValue();
-        if(null!=value){
-            return JSON.parseObject(value,clazz);
+        if(null!=getValue){
+            String value=getValue.getDecodedValue();
+            if(null!=value){
+                return JSON.parseObject(value,clazz);
+            }
         }
         return null;
     }

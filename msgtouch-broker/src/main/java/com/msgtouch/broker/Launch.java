@@ -1,6 +1,8 @@
 package com.msgtouch.broker;
 
+import com.msgtouch.broker.task.RouteHandler;
 import com.msgtouch.framework.Bootstrap;
+import com.msgtouch.framework.registry.ConsulEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -33,9 +35,7 @@ public class Launch {
 
         //初始化上下文
         Bootstrap.getInstances().initContext(applicationContext);
-        //ConsulEngine.getInstance().bind(applicationContext);
-        //RouteHandler.getInstance().init(applicationContext);
-       // RouteHandler.getInstance().watch();
+        ConsulEngine.getInstance().bind(applicationContext);
 
     }
 

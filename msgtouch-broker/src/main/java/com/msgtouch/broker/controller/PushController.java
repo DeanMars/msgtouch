@@ -28,7 +28,7 @@ public class PushController {
         if(uid==0&&!"".equals(gameId)){
             appUserService.pushSimpleMsgByGameId(gameId,msg);
         }else if(uid!=0&&"".equals(gameId)){
-            appUserService.pushSimpleMsgByGameId(gameId,msg);
+            appUserService.pushSimpleMsgByUid(uid,msg);
         }else{
             appUserService.pushSimpleMsg(uid,gameId,msg);
         }
