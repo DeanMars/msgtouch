@@ -11,16 +11,16 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by Dean on 2017/1/6.
  */
-public class RSyncRpcCallBack<T>   implements RpcCallBack<T> {
-    private static Logger logger= LoggerFactory.getLogger(RSyncRpcCallBack.class);
+public class ASyncRpcCallBack<T>   implements RpcCallBack<T> {
+    private static Logger logger= LoggerFactory.getLogger(ASyncRpcCallBack.class);
 
     public  void processResult(ISession session, T result){
-        logger.info("RSyncRpcCallBack processResult ----");
+        logger.info("ASyncRpcCallBack processResult ----");
     }
 
     public  void processException(Throwable throwable){
         throwable.printStackTrace();
-        logger.error("RSyncRpcCallBack processException throwable={}",throwable.getMessage());
+        logger.error("ASyncRpcCallBack processException throwable={}",throwable.getMessage());
     }
 
 

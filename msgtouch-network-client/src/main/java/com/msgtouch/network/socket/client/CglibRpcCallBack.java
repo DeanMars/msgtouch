@@ -20,7 +20,7 @@ public class CglibRpcCallBack implements MethodInterceptor {
         this.sync=sync;
     }
 
-    @Override
+
     public Object intercept(Object o, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
         Class[] interfaces=o.getClass().getInterfaces();
         Class controlInterface=null;

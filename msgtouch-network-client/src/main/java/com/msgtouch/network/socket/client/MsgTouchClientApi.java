@@ -1,5 +1,7 @@
 package com.msgtouch.network.socket.client;
 
+import com.msgtouch.network.socket.dispatcher.ASyncRpcCallBack;
+import com.msgtouch.network.socket.dispatcher.RpcCallBack;
 import com.msgtouch.network.socket.listener.MsgPushedListener;
 import com.msgtouch.network.socket.packet.MsgPBPacket;
 import com.msgtouch.network.socket.packet.MsgPacket;
@@ -47,6 +49,11 @@ public class MsgTouchClientApi {
         return result;
     }
 
+    public <T> void asyncRpcCall(String clusterName, String cmd, Class<T> resultType, RpcCallBack rpcCallBack, Object... params) throws Exception{
+        MsgPacket packet=new MsgPacket(cmd,params);
+        getSession().asyncRpcSend(packet,rpcCallBack);
+    }
+
     public MsgPBPacket.Packet.Builder syncRpcCall(String clusterName, String cmd, MsgPBPacket.Packet.Builder builder) throws Exception{
         long before= System.currentTimeMillis();
         builder.setCmd(clusterName+"/"+cmd);
@@ -54,6 +61,11 @@ public class MsgTouchClientApi {
         long after=System.currentTimeMillis();
         logger.info("Rpc sync call:cmd ={},responseTime = {}",cmd,after-before);
         return result;
+    }
+
+    public void asyncRpcCall(String clusterName, String cmd, MsgPBPacket.Packet.Builder builder, RpcCallBack rpcCallBack) throws Exception{
+        builder.setCmd(clusterName+"/"+cmd);
+        getSession().asyncPushPBMsg(builder,rpcCallBack);
     }
 
     public ISession getSession(){

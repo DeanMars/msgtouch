@@ -1,7 +1,7 @@
 package com.msgtouch.network.socket.session;
 
 
-import com.msgtouch.network.socket.dispatcher.RSyncRpcCallBack;
+import com.msgtouch.network.socket.dispatcher.ASyncRpcCallBack;
 import com.msgtouch.network.socket.dispatcher.RpcCallBack;
 import com.msgtouch.network.socket.dispatcher.SyncRpcCallBack;
 import com.msgtouch.network.socket.packet.MsgPBPacket;
@@ -34,7 +34,7 @@ public class Session implements ISession{
 	/**异步回调Map*/
 	public static final AttributeKey<Map<String,RpcCallBack>> ASYNC_CALLBACK_MAP=new AttributeKey<Map<String,RpcCallBack>>("ASYNC_CALLBACK_MAP");
 
-	public static final  RpcCallBack DEFAULT_ASYNC_CALL_BACK=new RSyncRpcCallBack();
+	public static final  RpcCallBack DEFAULT_ASYNC_CALL_BACK=new ASyncRpcCallBack();
 
 	private Channel channel;//连接通道
 	private long createTime;//创建时间
