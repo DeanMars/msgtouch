@@ -7,3 +7,6 @@ msgtouch-broker/target/
 msgtouch-common/target/
 msgtouch-clienttest/target/
 *.iml
+msgtouch-network-client/target/
+msgtouch-network-server/target/
+msgtouch-network/target/
