@@ -81,7 +81,10 @@ public class PBPacketMethodDispatcher extends MethodDispatcher<MsgPBPacket.Packe
                         }
                         responseClient(session,ret);
                     } else {
-                        SyncRpcCallBack callBack = session.getAttribute(Session.SYNC_CALLBACK_MAP).get(builder.getSeq());
+                        RpcCallBack callBack = session.getAttribute(Session.SYNC_CALLBACK_MAP).get(builder.getSeq());
+                        if(null==callBack){
+                            session.getAttribute(Session.ASYNC_CALLBACK_MAP).get(builder.getSeq());
+                        }
                         if (callBack != null) {
                             callBack.processResult(session, builder);
                         }

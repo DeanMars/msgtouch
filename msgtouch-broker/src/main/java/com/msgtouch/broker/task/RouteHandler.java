@@ -81,10 +81,10 @@ public class RouteHandler {
                 }
             }
             long end=System.currentTimeMillis();
-            logger.info("RouteHandler run handlerData end time={} ",end);
+            logger.info("RouteHandler run handlerData end time={},cost={}",end,end-start);
             RouteManager.getInstance().refreshRoute(list,appMap);
-            end=System.currentTimeMillis();
-            logger.info("RouteHandler run refreshRoute end time={} ",end);
+            long end1=System.currentTimeMillis();
+            logger.info("RouteHandler run refreshRoute end time={},cost={}",end1-end);
         }
 
     }

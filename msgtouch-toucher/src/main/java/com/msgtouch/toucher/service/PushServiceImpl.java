@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -28,7 +29,7 @@ public class PushServiceImpl {
 
         for(ISession session:list){
             try {
-                TestVo ret= session.pushJsonMsg( testVo, 10);
+                TestVo ret= session.syncPushJsonMsg( testVo, 10, TimeUnit.SECONDS);
                 logger.info("pushAll ret testVo Request={},Response={}",ret.getRequest(),ret.getResponse());
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -63,7 +64,7 @@ public class PushServiceImpl {
 
     private void pushMsg(ISession session,MsgPBPacket.Packet.Builder packet){
         try {
-            MsgPBPacket.Packet.Builder ret= session.pushPBMsg(packet, 10);
+            MsgPBPacket.Packet.Builder ret= session.syncPushPBMsg(packet, 10,TimeUnit.SECONDS);
             logger.info("pushAll ret testVo Request={},Response={}",ret.getUid(),ret.getCustomerId());
         } catch (InterruptedException e) {
             e.printStackTrace();

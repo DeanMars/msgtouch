@@ -4,6 +4,7 @@
  * */
 package com.msgtouch.network.socket.session;
 
+import com.msgtouch.network.socket.dispatcher.RpcCallBack;
 import com.msgtouch.network.socket.packet.MsgPBPacket;
 import com.msgtouch.network.socket.packet.MsgPacket;
 import io.netty.channel.Channel;
@@ -83,17 +84,57 @@ public interface ISession {
 	 * 清除Session相关信息
 	 * */
 	void clear();
-	Future<?> writeAndFlush(MsgPacket packet);
-	//void asyncRpcSend(MsgPacket packet, RpcCallback callback) ;
+	<T>Future<?> writeAndFlush(T t);
+	/**
+	 * 发送异步消息
+	 * */
+	void asyncRpcSend(MsgPacket packet, RpcCallBack callback) ;
+	/**
+	 * 发送异步消息
+	 * */
+	void asyncRpcSend(MsgPBPacket.Packet.Builder packet,RpcCallBack rpcCallback);
 	/**
 	 * 发送同步消息，并等待结果返回
 	 * @return 返回结果
 	 * */
-	<T> T syncRpcSend(MsgPacket packet, Class<T> resultType, long timeout, TimeUnit unit)throws InterruptedException,ExecutionException, TimeoutException;
-
+	<T>T syncRpcSend(MsgPacket packet, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
+	/**
+	 * 发送同步消息，并等待结果返回
+	 * @return 返回结果
+	 * */
 	MsgPBPacket.Packet.Builder syncRpcSend(MsgPBPacket.Packet.Builder packet, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
 
-	<T> T pushJsonMsg(T t, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException ;
+	/**
+	 * 同步推送消息，并返回结果
+	 * @param t
+	 * @param timeout
+	 * @param unit
+	 * @param <T>
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
+	<T>T syncPushJsonMsg(T t, long timeout,TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
 
-	MsgPBPacket.Packet.Builder pushPBMsg(MsgPBPacket.Packet.Builder packet, long timeoutSecond) throws InterruptedException, ExecutionException, TimeoutException ;
+	/**
+	 * 同步推送消息，并返回结果
+	 * @param packet
+	 * @param timeoutSecond
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
+	MsgPBPacket.Packet.Builder  syncPushPBMsg(MsgPBPacket.Packet.Builder packet, long timeoutSecond,TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
+
+	/**
+	 * 异步推送消息，并返回结果
+	 * @param packet
+	 * @param rpcCallback
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
+	void  asyncPushPBMsg(MsgPBPacket.Packet.Builder packet,RpcCallBack rpcCallback) throws InterruptedException, ExecutionException, TimeoutException;
 }

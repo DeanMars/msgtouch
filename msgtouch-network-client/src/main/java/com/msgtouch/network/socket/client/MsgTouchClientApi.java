@@ -41,7 +41,7 @@ public class MsgTouchClientApi {
     public <T> T syncRpcCall(String clusterName, String cmd, Class<T> resultType, Object... params) throws Exception{
         MsgPacket packet=new MsgPacket(cmd,params);
         long before= System.currentTimeMillis();
-        T result=getSession().syncRpcSend(packet, resultType, (long) syncCallTimeout, TimeUnit.SECONDS);
+        T result=getSession().syncRpcSend(packet, (long) syncCallTimeout, TimeUnit.SECONDS);
         long after=System.currentTimeMillis();
         logger.info("Rpc sync call:cmd ={},responseTime = {}",cmd,after-before);
         return result;
