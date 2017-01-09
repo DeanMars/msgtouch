@@ -21,18 +21,16 @@ public class MsgTouchServiceEngine {
 
     private static Logger logger= LoggerFactory.getLogger(MsgTouchServiceEngine.class);
 
-    private static MsgTouchServiceEngine serviceEngine=null;
+
     private MsgTouchServiceEngine(){}
 
+    private static class MsgTouchServiceEngineHolder{
+        private static final MsgTouchServiceEngine serviceEngine=new MsgTouchServiceEngine();
+    }
+
+
     public static MsgTouchServiceEngine getInstances(){
-        if(null==serviceEngine){
-            synchronized (MsgTouchServiceEngine.class){
-                if(null==serviceEngine) {
-                    serviceEngine = new MsgTouchServiceEngine();
-                }
-            }
-        }
-        return serviceEngine;
+        return MsgTouchServiceEngineHolder.serviceEngine;
     }
 
 

@@ -22,19 +22,13 @@ import java.util.List;
  */
 public class Bootstrap {
 
-    private static Bootstrap bootstrap=null;
-
     private Bootstrap(){}
 
+    public static class BootstrapHolder{
+        private static final Bootstrap bootstrap=new Bootstrap();
+    }
     public static Bootstrap getInstances(){
-        if(null==bootstrap){
-            synchronized (Bootstrap.class){
-                if(null==bootstrap){
-                    bootstrap=new Bootstrap();
-                }
-            }
-        }
-        return bootstrap;
+        return BootstrapHolder.bootstrap;
     }
 
     public void initContext(ApplicationContext applicationContext){

@@ -19,20 +19,14 @@ public class RouteManager {
    // private static String root;
     private static Logger logger= LoggerFactory.getLogger(RouteManager.class);
    // private static ConsulClient consulClient;
-    private static RouteManager routeManager;
     private static List<RouteTarget> routeTargetList=null;
     private static ConcurrentHashMap<String,RouteTarget> routeAppMap=null;
 
-
+    private static class RouteManagerHolder{
+        private static final RouteManager routeManager=new RouteManager();
+    }
     public static RouteManager getInstance(){
-        if(null==routeManager){
-            synchronized (RouteManager.class){
-                if(null==routeManager){
-                    routeManager=new RouteManager();
-                }
-            }
-        }
-        return routeManager;
+        return RouteManagerHolder.routeManager;
     }
 
     public void init(ApplicationContext applicationContext){

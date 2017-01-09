@@ -26,18 +26,12 @@ public class ConsulEngine implements RegistryEngine {
     private Logger logger= LoggerFactory.getLogger(ConsulEngine.class);
     private ConsulSetting setting=null;
     private ConsulClient consulClient=null;
-    private static ConsulEngine consulEngine=null;
     private ConsulEngine(){}
-
+    private static class ConsulEngineHolder{
+        private static final ConsulEngine consulEngine=new ConsulEngine();
+    }
     public  static ConsulEngine getInstance(){
-        if(null==consulEngine){
-            synchronized (ConsulEngine.class){
-                if(null==consulEngine){
-                    consulEngine=new ConsulEngine();
-                }
-            }
-        }
-        return consulEngine;
+        return ConsulEngineHolder.consulEngine;
     }
 
 

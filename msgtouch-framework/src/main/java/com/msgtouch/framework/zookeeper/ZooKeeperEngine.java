@@ -34,16 +34,11 @@ public class ZooKeeperEngine {
 
     private static ZooKeeperEngine zooKeeperEngine=null;
     private ZooKeeperEngine(){}
-
+    private static class ZooKeeperEngineHolder{
+        private static final ZooKeeperEngine zooKeeperEngine=new ZooKeeperEngine();
+    }
     public static ZooKeeperEngine getInstances(){
-        if(null==zooKeeperEngine){
-            synchronized (ZooKeeperEngine.class){
-                if(null==zooKeeperEngine) {
-                    zooKeeperEngine = new ZooKeeperEngine();
-                }
-            }
-        }
-        return zooKeeperEngine;
+        return ZooKeeperEngineHolder.zooKeeperEngine;
     }
 
 

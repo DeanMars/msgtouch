@@ -7,19 +7,13 @@ import org.springframework.context.ApplicationContext;
  */
 public class SpringBeanAccess implements IBeanAccess{
     private ApplicationContext applicationContext;
-    private static SpringBeanAccess springBeanAccess=null;
 
     private SpringBeanAccess(){}
-
+    private static class SpringBeanAccessHolder{
+        private static final SpringBeanAccess springBeanAccess=new SpringBeanAccess();
+    }
     public static SpringBeanAccess getInstances(){
-        if(null==springBeanAccess){
-            synchronized (SpringBeanAccess.class){
-                if(null==springBeanAccess){
-                    springBeanAccess=new SpringBeanAccess();
-                }
-            }
-        }
-        return springBeanAccess;
+        return SpringBeanAccessHolder.springBeanAccess;
     }
 
     public synchronized void initSpringContext(ApplicationContext applicationContext){
