@@ -9,6 +9,7 @@ public class RouteTarget  implements Cloneable {
     private int port;
     private long uid;
     private String gameId;
+    private int size;
 
     public String getAddress() {
         return address;
@@ -52,9 +53,17 @@ public class RouteTarget  implements Cloneable {
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
+
         return super.clone();
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
 
     public static void main(String [] args){
         RouteTarget routeTarget=new RouteTarget();
@@ -69,21 +78,23 @@ public class RouteTarget  implements Cloneable {
 
             System.out.println(routeTarget.getAppName());
             System.out.println(routeTarget1.getAppName());
-
-            System.out.println(routeTarget.getAppName());
-            System.out.println(routeTarget1.getAppName());
+            System.out.println(routeTarget1.getAppName()==routeTarget.getAppName());
 
             System.out.println(routeTarget.getGameId());
             System.out.println(routeTarget1.getGameId());
+            System.out.println(routeTarget1.getGameId()==routeTarget.getGameId());
 
             System.out.println(routeTarget.getUid());
             System.out.println(routeTarget1.getUid());
+            System.out.println(routeTarget1.getUid()==routeTarget.getUid());
 
             System.out.println(routeTarget.getAddress());
             System.out.println(routeTarget1.getAddress());
+            System.out.println(routeTarget1.getAddress()==routeTarget.getAddress());
 
             System.out.println(routeTarget.getPort());
             System.out.println(routeTarget1.getPort());
+            System.out.println(routeTarget1.getPort()==routeTarget.getPort());
 
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();

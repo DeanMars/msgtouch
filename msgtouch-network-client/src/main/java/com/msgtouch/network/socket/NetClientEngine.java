@@ -2,6 +2,7 @@ package com.msgtouch.network.socket;
 
 import com.msgtouch.network.settings.SocketClientSetting;
 import com.msgtouch.network.socket.client.MsgTouchClientApi;
+import com.msgtouch.network.socket.client.SimpleMsgTouchClientApi;
 import com.msgtouch.network.socket.client.SocketClientEngine;
 import com.msgtouch.network.socket.codec.*;
 import com.msgtouch.network.socket.dispatcher.JsonPacketMethodDispatcher;
@@ -21,7 +22,8 @@ public class NetClientEngine {
         MsgDecoder msgTouchDecoder=new JsonDecoder();
         MsgEncoder msgTouchEncoder=new JsonEncoder();
         socketClientEngine.bind(msgTouchDecoder,msgTouchEncoder);
-        return MsgTouchClientApi.getInstance().initComponents(socketClientEngine);
+        MsgTouchClientApi msgTouchClientApi=new MsgTouchClientApi();
+        return msgTouchClientApi.initComponents(socketClientEngine);
     }
 
 
@@ -31,9 +33,27 @@ public class NetClientEngine {
         MsgDecoder msgTouchDecoder=new PBDecoder();
         MsgEncoder msgTouchEncoder=new PBEncoder();
         socketClientEngine.bind(msgTouchDecoder,msgTouchEncoder);
-        return MsgTouchClientApi.getInstance().initComponents(socketClientEngine);
+        MsgTouchClientApi msgTouchClientApi=new MsgTouchClientApi();
+        return msgTouchClientApi.initComponents(socketClientEngine);
+    }
+
+    public static MsgTouchClientApi startSimpleJsonPacketClient(SocketClientSetting socketClientSetting)throws Exception{
+        JsonPacketMethodDispatcher msgTouchMethodDispatcher=new JsonPacketMethodDispatcher(socketClientSetting.cmdThreadSize,true);
+        SocketClientEngine socketClientEngine=new SocketClientEngine(socketClientSetting,msgTouchMethodDispatcher);
+        MsgDecoder msgTouchDecoder=new JsonDecoder();
+        MsgEncoder msgTouchEncoder=new JsonEncoder();
+        socketClientEngine.bind(msgTouchDecoder,msgTouchEncoder);
+        return SimpleMsgTouchClientApi.getInstance().initComponents(socketClientEngine);
     }
 
 
+    public static MsgTouchClientApi startSimplePBPacketClient(SocketClientSetting socketClientSetting)throws Exception{
+        PBPacketMethodDispatcher msgTouchMethodDispatcher=new PBPacketMethodDispatcher(socketClientSetting.cmdThreadSize);
+        SocketClientEngine socketClientEngine=new SocketClientEngine(socketClientSetting,msgTouchMethodDispatcher);
+        MsgDecoder msgTouchDecoder=new PBDecoder();
+        MsgEncoder msgTouchEncoder=new PBEncoder();
+        socketClientEngine.bind(msgTouchDecoder,msgTouchEncoder);
+        return SimpleMsgTouchClientApi.getInstance().initComponents(socketClientEngine);
+    }
 
 }

@@ -75,25 +75,6 @@ public class Bootstrap {
 
     }
 
-    public synchronized void startClientSocket(ApplicationContext applicationContext){
-        //初始化上下文
-        initContext(applicationContext);
-        //rpc service加载
-        List<String> rpcServiceList=RemoteUtils.getRpcServices((ConfigurableApplicationContext)applicationContext);
 
-
-       // ConsulEngine.getInstance().findServices(rpcServiceList);
-
-        /*SocketClientSetting socketClientSetting=new SocketClientSetting();
-        socketClientSetting.host="127.0.0.1";
-        socketClientSetting.port=8001;
-        socketClientSetting.timeOutSecond=20;
-
-        try {
-            NetServerEngine.startClient(socketClientSetting);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-    }
 
 }

@@ -14,18 +14,16 @@ import java.util.Map;
  */
 public class CglibRpcCallProxyFactory implements RpcCallProxyFactory{
 
-    private static CglibRpcCallProxyFactory cglibRpcCallProxyFactory=new CglibRpcCallProxyFactory();
+    private Map<Class,RpcCallProxyFactory.CallProxyEntry> proxyCache=new HashMap<Class,RpcCallProxyFactory.CallProxyEntry>();
+    private CglibRpcCallBack SYNC_CALL_CGLIB_INTERCEPTOR=null;
+    private CglibRpcCallBack ASYNC_CALL_CGLIB_INTERCEPTOR=null;
+    private static final Logger log= LoggerFactory.getLogger(CglibRpcCallProxyFactory.class);
 
-    private CglibRpcCallProxyFactory(){}
-
-    public static CglibRpcCallProxyFactory getInstance(){
-        return cglibRpcCallProxyFactory;
+    public void initCglibRpcCallBack(MsgTouchClientApi msgTouchClientApi){
+        SYNC_CALL_CGLIB_INTERCEPTOR=new CglibRpcCallBack(true,msgTouchClientApi);
+        ASYNC_CALL_CGLIB_INTERCEPTOR=new CglibRpcCallBack(false,msgTouchClientApi);
     }
 
-    private Map<Class,RpcCallProxyFactory.CallProxyEntry> proxyCache=new HashMap<Class,RpcCallProxyFactory.CallProxyEntry>();
-    private static final CglibRpcCallBack SYNC_CALL_CGLIB_INTERCEPTOR=new CglibRpcCallBack(true);
-    private static final CglibRpcCallBack ASYNC_CALL_CGLIB_INTERCEPTOR=new CglibRpcCallBack(false);
-    private static final Logger log= LoggerFactory.getLogger(CglibRpcCallProxyFactory.class);
 
     public <T> T getRpcCallProxy(boolean sync,Class<T> clazz) {
         CallProxyEntry<T> entry=proxyCache.get(clazz);

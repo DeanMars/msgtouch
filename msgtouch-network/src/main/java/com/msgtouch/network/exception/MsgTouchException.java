@@ -1,4 +1,4 @@
-package com.msgtouch.framework.exception;
+package com.msgtouch.network.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

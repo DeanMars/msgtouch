@@ -4,6 +4,7 @@ package com.msgtouch.network.socket.session;
 import com.msgtouch.network.socket.dispatcher.ASyncRpcCallBack;
 import com.msgtouch.network.socket.dispatcher.RpcCallBack;
 import com.msgtouch.network.socket.dispatcher.SyncRpcCallBack;
+import com.msgtouch.network.socket.packet.MsgHB;
 import com.msgtouch.network.socket.packet.MsgPBPacket;
 import com.msgtouch.network.socket.packet.MsgPacket;
 import io.netty.channel.Channel;
@@ -11,6 +12,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.DefaultProgressivePromise;
 import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.ScheduledFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +38,15 @@ public class Session implements ISession{
 
 	public static final  RpcCallBack DEFAULT_ASYNC_CALL_BACK=new ASyncRpcCallBack();
 
+	public ISessionListenter sessionLisenter;
 	private Channel channel;//连接通道
 	private long createTime;//创建时间
 	private long lastActiveTime;//最后活动时间
 	private volatile boolean active=true;
+	public int heartBeatTime=10;
+	public TimeUnit heartBeatTimeUnit;
+	private ScheduledFuture heartBeatFuture;
+
 	//Netty已经触发过inActive
 	private AtomicBoolean nettyInActive=new AtomicBoolean(false);
 	private static Logger logger= LoggerFactory.getLogger(Session.class);
@@ -162,6 +169,13 @@ public class Session implements ISession{
 		channel.attr(key).set(value);
 	}
 
+	public ISessionListenter getSessionLisenter() {
+		return sessionLisenter;
+	}
+
+	public void setSessionLisenter(ISessionListenter sessionLisenter) {
+		this.sessionLisenter = sessionLisenter;
+	}
 
 	public <T>T syncRpcSend(MsgPacket packet, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		packet.setUuid(UUID.randomUUID().toString());
@@ -202,6 +216,46 @@ public class Session implements ISession{
 	public MsgPBPacket.Packet.Builder  syncPushPBMsg(MsgPBPacket.Packet.Builder packet, long timeoutSecond,TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		packet.setRetCode(MsgPBPacket.RetCode.PUSH);
 		return syncRpcSend(packet,timeoutSecond,unit);
+	}
+
+	/*public void heartBeats(int time,TimeUnit timeUnit)  {
+		this.heartBeatTime=time;
+		this.heartBeatTimeUnit=timeUnit;
+		this.getChannel().eventLoop().scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				MsgPBPacket.Packet.Builder packet= MsgHB.getHBPacket();
+				asyncRpcSend(packet,null);
+			}
+		},0,time,timeUnit);
+	}*/
+
+	public void heartBeats(final int time, final TimeUnit timeUnit)  {
+		this.heartBeatTime=time;
+		this.heartBeatTimeUnit=timeUnit;
+		if(heartBeatFuture!=null){
+			heartBeatFuture.cancel(true);
+		}
+		heartBeatFuture=this.getChannel().eventLoop().scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				MsgPBPacket.Packet.Builder packet= MsgHB.getHBPacket();
+				try {
+					syncRpcSend(packet,time,timeUnit);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				} catch (TimeoutException e) {
+					e.printStackTrace();
+				}
+			}
+		},0,time,timeUnit);
+	}
+
+	public void cancelHeartBeats(){
+		if(heartBeatFuture!=null){
+			heartBeatFuture.cancel(true);
+			heartBeatFuture=null;
+		}
 	}
 
 	public void  asyncPushPBMsg(MsgPBPacket.Packet.Builder packet,RpcCallBack rpcCallback) throws InterruptedException, ExecutionException, TimeoutException {
@@ -251,5 +305,19 @@ public class Session implements ISession{
 		return result;
 	}
 
+	public int getHeartBeatTime() {
+		return heartBeatTime;
+	}
 
+	public void setHeartBeatTime(int heartBeatTime) {
+		this.heartBeatTime = heartBeatTime;
+	}
+
+	public TimeUnit getHeartBeatTimeUnit() {
+		return heartBeatTimeUnit;
+	}
+
+	public void setHeartBeatTimeUnit(TimeUnit heartBeatTimeUnit) {
+		this.heartBeatTimeUnit = heartBeatTimeUnit;
+	}
 }

@@ -1,11 +1,14 @@
 package com.msgtouch.network.socket.client;
 
-import com.msgtouch.network.socket.dispatcher.ASyncRpcCallBack;
+import com.msgtouch.network.settings.SocketClientSetting;
+import com.msgtouch.network.socket.NetClientEngine;
 import com.msgtouch.network.socket.dispatcher.RpcCallBack;
+import com.msgtouch.network.socket.listener.AbstractPBMsgPushedListener;
 import com.msgtouch.network.socket.listener.MsgPushedListener;
 import com.msgtouch.network.socket.packet.MsgPBPacket;
 import com.msgtouch.network.socket.packet.MsgPacket;
 import com.msgtouch.network.socket.session.ISession;
+import com.msgtouch.network.socket.session.ISessionListenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,19 +22,16 @@ public class MsgTouchClientApi {
 
     private CglibRpcCallProxyFactory rpcCallProxyFactory=null;
     private SocketClientEngine socketClientEngine=null;
-    private static final MsgTouchClientApi msgTouchClientApi=new MsgTouchClientApi();
     private int syncCallTimeout=10;
-    private MsgTouchClientApi(){}
+    private ITouchHostHelper iTouchHostHelper;
 
-    public static MsgTouchClientApi getInstance(){
-        return msgTouchClientApi;
-    }
 
     public MsgTouchClientApi initComponents(SocketClientEngine socketClientEngine){
         syncCallTimeout=socketClientEngine.getSettings().timeOutSecond;
         this.socketClientEngine=socketClientEngine;
-        this.rpcCallProxyFactory=CglibRpcCallProxyFactory.getInstance();
-        return msgTouchClientApi;
+        this.rpcCallProxyFactory=new CglibRpcCallProxyFactory();
+        rpcCallProxyFactory.initCglibRpcCallBack(MsgTouchClientApi.this);
+        return MsgTouchClientApi.this;
     }
 
 
@@ -72,9 +72,23 @@ public class MsgTouchClientApi {
         return  socketClientEngine.getSession();
     }
 
+    public void setSessionListener(ISessionListenter sessionListener){
+        socketClientEngine.setSessionListenter(sessionListener);
+    }
+
+    public void addPushedListener(MsgPushedListener ... msgPushedListeners){
+        for(MsgPushedListener msgPushedListener:msgPushedListeners) {
+            socketClientEngine.getMsgTouchMethodDispatcher().addPushedListener(msgPushedListener);
+        }
+    }
 
     public void addPushedListener(MsgPushedListener msgPushedListener){
         socketClientEngine.getMsgTouchMethodDispatcher().addPushedListener(msgPushedListener);
     }
+
+    public void shutdown(boolean immediately){
+        socketClientEngine.shutdown(immediately);
+    }
+
 
 }

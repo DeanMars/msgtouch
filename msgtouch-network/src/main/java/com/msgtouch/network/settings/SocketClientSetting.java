@@ -1,5 +1,7 @@
 package com.msgtouch.network.settings;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Dean on 2016/9/7.
  */
@@ -18,5 +20,13 @@ public class SocketClientSetting {
     public int cmdThreadSize =10;
     /**Netty层Boss类线程数**/
     public int bossThreadSize=2;
+    /**
+     * 心跳间隔时间
+     */
+    public int heartBeatsTime=10;
+    /**
+     * 心跳时间单位
+     */
+    public TimeUnit heartBeatsTimeUnit=TimeUnit.SECONDS;
 
 }

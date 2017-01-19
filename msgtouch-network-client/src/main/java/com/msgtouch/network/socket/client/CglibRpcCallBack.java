@@ -14,10 +14,11 @@ import java.lang.reflect.Method;
  * Created by Dean on 2016/11/23.
  */
 public class CglibRpcCallBack implements MethodInterceptor {
-    MsgTouchClientApi rpcClientApi=MsgTouchClientApi.getInstance();
+    private MsgTouchClientApi rpcClientApi=null;
     private boolean sync=true;
-    public CglibRpcCallBack(boolean sync){
+    public CglibRpcCallBack(boolean sync,MsgTouchClientApi rpcClientApi){
         this.sync=sync;
+        this.rpcClientApi=rpcClientApi;
     }
 
 

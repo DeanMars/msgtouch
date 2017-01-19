@@ -64,4 +64,6 @@ public class Constraint {
     //Netty层Boss类线程数
     public static final String TCP_SERVER_BOSSTHREADSIZE="tcp.server.bossThreadSize";
 
+    public static final String MsgTouchHeartBeats="MsgTouch_HeartBeats";
+
 }

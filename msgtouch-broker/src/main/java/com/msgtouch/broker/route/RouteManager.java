@@ -56,7 +56,8 @@ public class RouteManager {
                         String targetGameId=args[1];
                         if(targetGameId.equals(gameId)){
                             RouteTarget routeTarget=entry.getValue();
-                            RouteTarget target=cloneRouteTarget(routeTarget);
+                           // RouteTarget target=cloneRouteTarget(routeTarget);
+                            RouteTarget target=routeTarget;
                             result.add(target);
                         }
                     }
@@ -77,7 +78,8 @@ public class RouteManager {
                         String targetUid=args[0];
                         if(targetUid.equals(uid)){
                             RouteTarget routeTarget=entry.getValue();
-                            RouteTarget target=cloneRouteTarget(routeTarget);
+                            //RouteTarget target=cloneRouteTarget(routeTarget);
+                            RouteTarget target=routeTarget;
                             result.add(target);
                             if(singleApp){
                                 break;
@@ -102,7 +104,8 @@ public class RouteManager {
                         String targetGameid=args[1];
                         if(targetUid.equals(uid)&&targetGameid.equals(gameId)){
                             RouteTarget routeTarget=entry.getValue();
-                            RouteTarget target=cloneRouteTarget(routeTarget);
+                            //RouteTarget target=cloneRouteTarget(routeTarget);
+                            RouteTarget target=routeTarget;
                             result.add(target);
                             break;
                         }
@@ -149,7 +152,11 @@ public class RouteManager {
         return result;
     }
 
-    private RouteTarget cloneRouteTarget(RouteTarget routeTarget){
+    public static List<RouteTarget> getRouteTargetList() {
+        return routeTargetList;
+    }
+
+    /*private RouteTarget cloneRouteTarget(RouteTarget routeTarget){
         RouteTarget result=null;
         if(null!=routeTarget){
             try {
@@ -160,5 +167,8 @@ public class RouteManager {
         }
         return result;
     }
+*/
+
+
 
 }

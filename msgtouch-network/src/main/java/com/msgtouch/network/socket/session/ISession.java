@@ -84,7 +84,20 @@ public interface ISession {
 	 * 清除Session相关信息
 	 * */
 	void clear();
+
+	ISessionListenter getSessionLisenter();
+
+	void setSessionLisenter(ISessionListenter sessionLisenter);
+
+
 	<T>Future<?> writeAndFlush(T t);
+
+	/**
+	 * 心跳
+	 */
+	void heartBeats(int time,TimeUnit timeUnit) ;
+
+	void cancelHeartBeats();
 	/**
 	 * 发送异步消息
 	 * */
@@ -137,4 +150,12 @@ public interface ISession {
 	 * @throws TimeoutException
 	 */
 	void  asyncPushPBMsg(MsgPBPacket.Packet.Builder packet,RpcCallBack rpcCallback) throws InterruptedException, ExecutionException, TimeoutException;
+
+	int getHeartBeatTime();
+
+	void setHeartBeatTime(int heartBeatTime);
+
+	TimeUnit getHeartBeatTimeUnit();
+
+	void setHeartBeatTimeUnit(TimeUnit heartBeatTimeUnit);
 }

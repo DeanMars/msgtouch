@@ -1,6 +1,7 @@
 package com.msgtouch.network.socket.dispatcher;
 
 
+import com.msgtouch.network.context.Constraint;
 import com.msgtouch.network.socket.listener.AbstractPBMsgPushedListener;
 import com.msgtouch.network.socket.listener.MsgPushedListener;
 import com.msgtouch.network.socket.packet.MsgPBPacket;
@@ -26,7 +27,6 @@ public abstract class MethodDispatcher<T> {
     protected List<String> clusterList=new ArrayList<String>();
     protected Map<String,List<MsgPushedListener>> pushedListenerMap=new HashMap<String,List<MsgPushedListener>>();
     protected boolean handlerPush;
-
     protected void initPool(int threadSize){
         if(null==pool){
             pool=Executors.newFixedThreadPool(threadSize, new ThreadFactory() {
@@ -44,6 +44,10 @@ public abstract class MethodDispatcher<T> {
     }
 
     public void addMethod(String cmd,MsgTouchMethodInvoker invoker){
+        if(Constraint.MsgTouchHeartBeats.equals(cmd)){
+            logger.error("RpcService method can not add by cmd=MsgTouch_HeartBeats");
+            throw new RuntimeException("RpcService method can not add by cmd=MsgTouch_HeartBeats");
+        }
         if(methodInvokerMap.containsKey(cmd)){
             logger.error("RpcService method has exists:cmd={}",cmd);
             throw new RuntimeException("RpcService method "+cmd+"has exists");

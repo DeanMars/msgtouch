@@ -19,7 +19,7 @@ public class RemoteUtils {
 
     private  static Logger logger= LoggerFactory.getLogger(RemoteUtils.class);
 
-    public static List<String>  getRpcServices(ConfigurableApplicationContext applicationContext){
+    public static List<String>  getRpcServices(ConfigurableApplicationContext applicationContext,CglibRpcCallProxyFactory cglibRpcCallProxyFactory){
         List<String> remoteService=new ArrayList<String>();
         try {
             DefaultListableBeanFactory defaultListableBeanFactory=(DefaultListableBeanFactory)applicationContext.getBeanFactory();
@@ -33,7 +33,7 @@ public class RemoteUtils {
                         MsgService msgService=(MsgService)fieldClass.getAnnotation(MsgService.class);
                         remoteService.add(msgService.value());
                         logger.debug("RemoteUtils getRpcServices RpcService={} "+fieldClass.getName());
-                        Object classValue= CglibRpcCallProxyFactory.getInstance().getRpcCallProxy(true,fieldClass);
+                        Object classValue= cglibRpcCallProxyFactory.getRpcCallProxy(true,fieldClass);
                         field.setAccessible(true);
                         field.set(beanObj,classValue);
                         field.setAccessible(false);

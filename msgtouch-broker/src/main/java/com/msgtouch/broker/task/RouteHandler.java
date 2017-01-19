@@ -46,7 +46,7 @@ public class RouteHandler {
         @Override
         public void run() {
             long start=System.currentTimeMillis();
-            logger.info("RouteHandler run handlerData start time={} ",start);
+            logger.info("RouteHandler run handlerData start handlerId ={},time={} ",handlerId,start);
             Map<String,RouteTarget> appMap=new HashMap<String,RouteTarget>();
             List<RouteTarget> list=new ArrayList<RouteTarget>();
             for(HealthService healthService:serviceList){
@@ -58,8 +58,7 @@ public class RouteHandler {
                 target.setAddress(address);
                 target.setPort(port);
 
-                list.add(target);
-
+                int count=0;
                 for(TouchService touchService:touchCluster.getServices()){
                     String touchServiceAddress=touchService.getHost();
                     int touchServicePort=touchService.getPort();
@@ -75,16 +74,20 @@ public class RouteHandler {
                             userTarget.setGameId(touchApp.getGameId());
                             appMap.put(key, userTarget);
                         }
+                        count++;
                         break;
                     }
 
                 }
+
+                target.setSize(count);
+                list.add(target);
             }
             long end=System.currentTimeMillis();
-            logger.info("RouteHandler run handlerData end time={},cost={}",end,end-start);
+            logger.info("RouteHandler run handlerData end handlerId={},time={},cost={}",handlerId,end,end-start);
             RouteManager.getInstance().refreshRoute(list,appMap);
             long end1=System.currentTimeMillis();
-            logger.info("RouteHandler run refreshRoute end time={},cost={}",end1-end);
+            logger.info("RouteHandler run refreshRoute end handlerId={},time={},cost={}",handlerId,end1,end1-end);
         }
 
     }

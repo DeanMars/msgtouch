@@ -13,4 +13,5 @@ public class SocketServerSetting {
     /**Netty层Boss类线程数**/
     public int bossThreadSize=2;
 
+
 }

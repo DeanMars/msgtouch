@@ -15,12 +15,6 @@ import java.util.List;
 public class MsgDecoder<T> extends MessageToMessageDecoder<T>{
     private static Logger logger= LoggerFactory.getLogger(MsgDecoder.class);
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-        logger.error("MsgDecoder Exception Caught {}",ctx.channel(),cause);
-    }
-
-    @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, T t, List<Object> list) throws Exception {
 
     }

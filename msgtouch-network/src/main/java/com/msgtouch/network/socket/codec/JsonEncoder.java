@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Dean on 2016/9/8.
  */
 public class JsonEncoder extends MsgEncoder<MsgPacket> {
-    private static Logger logger= LoggerFactory.getLogger(JsonDecoder.class);
+    private static Logger logger= LoggerFactory.getLogger(JsonEncoder.class);
     protected void encode(ChannelHandlerContext ctx, MsgPacket msgPacket, List list) throws Exception {
         try{
             ByteBuf buf= Unpooled.buffer();
@@ -38,10 +38,10 @@ public class JsonEncoder extends MsgEncoder<MsgPacket> {
             }
             MsgBytePacket msgBytePacket=new MsgBytePacket(buf);
             list.add(msgBytePacket);
-            logger.debug("RpcService encode {}:{}",ctx.channel(),msgPacket.toString());
+            logger.debug("JsonEncoder encode {}:{}",ctx.channel(),msgPacket.toString());
         }catch (Error e){
             e.printStackTrace();
-            logger.error("RpcService encode error {}",ctx.channel(),e);
+            logger.error("JsonEncoder encode error {}",ctx.channel(),e);
         }
     }
 

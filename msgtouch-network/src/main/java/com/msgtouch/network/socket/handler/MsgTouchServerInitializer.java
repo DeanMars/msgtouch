@@ -10,12 +10,16 @@ import com.msgtouch.network.socket.codec.TcpHeaderDecoder;
 import com.msgtouch.network.socket.dispatcher.MethodDispatcher;
 import com.msgtouch.network.socket.codec.MsgDecoder;
 import com.msgtouch.network.socket.codec.TcpHeaderEncoder;
+import com.msgtouch.network.socket.heartbeats.MsgTouchServerHBHandler;
 import com.msgtouch.network.utils.EngineParams;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
 
 @Sharable
 public class MsgTouchServerInitializer extends ChannelInitializer<SocketChannel>{
@@ -35,15 +39,14 @@ public class MsgTouchServerInitializer extends ChannelInitializer<SocketChannel>
 		if(EngineParams.isNettyLogging()){
 			ch.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
 		}
-
 		ch.pipeline().addLast(new TcpHeaderDecoder());
 		ch.pipeline().addLast(msgTouchDecoder);
 		ch.pipeline().addLast(new TcpHeaderEncoder());
 		ch.pipeline().addLast(msgTouchEncoder);
-
-
 		ch.pipeline().addLast(new MsgTouchInboundHandler(msgTouchMethodDispatcher));
 
+		ch.pipeline().addLast(new IdleStateHandler(0, 0, 60,TimeUnit.SECONDS));
+		ch.pipeline().addLast(new MsgTouchServerHBHandler());
 
 	}
 
