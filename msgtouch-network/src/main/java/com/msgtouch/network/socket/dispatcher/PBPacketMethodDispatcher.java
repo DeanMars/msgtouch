@@ -129,7 +129,7 @@ public class PBPacketMethodDispatcher extends MethodDispatcher<MsgPBPacket.Packe
         boolean ret=false;
         long uid=packet.getUid();
         String gameId=packet.getGameId();
-        ISession session= SessionManager.getInstance().getSession(uid+"_"+gameId);
+        ISession session= SessionManager.getInstance().getSession(gameId+"_"+uid);
         if(null!=session&&session.isActive()){
             return true;
         }
